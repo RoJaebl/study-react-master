@@ -20,22 +20,21 @@ const rotationAnimation = keyframes`
     border-radius: 0px;
 }
 `;
+
+const Emoji = styled.span`
+    align-items: center;
+`;
+
 const Box = styled.div`
-    height: 100px;
-    width: 100px;
+    height: 200px;
+    width: 200px;
     background-color: tomato;
     display: flex;
     justify-content: center;
     align-items: center;
     animation: ${rotationAnimation} 1s linear infinite;
-    span {
-        font-size: 36px;
-        &:hover {
-            font-size: 50px;
-        }
-        &:active {
-            opacity: 0;
-        }
+    ${Emoji}:hover {
+        font-size: 98px;
     }
 `;
 
@@ -43,7 +42,7 @@ function App() {
     return (
         <Wrapper>
             <Box>
-                <span>😍</span>
+                <Emoji as="p">😍</Emoji>
             </Box>
         </Wrapper>
     );
