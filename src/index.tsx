@@ -4,7 +4,7 @@ import { ThemeProvider } from "styled-components";
 import App from "./App";
 
 const rootEl = document.getElementById("root");
-const root = ReactDOM.createRoot(rootEl);
+const root = ReactDOM.createRoot(rootEl as Element);
 
 const darkTheme = {
     textColor: "whitesmoke",
