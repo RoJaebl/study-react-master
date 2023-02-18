@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Root from "./Root";
 import About from "./screens/About";
 import ErrorComponent from "./screens/components/ErrorComponents";
-import Notfoutnd from "./screens/components/Notfound";
+import Notfound from "./screens/components/Notfound";
 import Home from "./screens/Home";
 
 const router = createBrowserRouter([
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
                 element: <About />,
             },
         ],
-        errorElement: <Notfoutnd />,
+        errorElement: <Notfound />,
     },
 ]);
 
