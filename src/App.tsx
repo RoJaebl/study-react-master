@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -10,9 +11,7 @@ const H1 = styled.h1`
 
 function App() {
     return (
-        <Container>
-            <H1>protected</H1>
-        </Container>
+        <Outlet/>
     );
 }
 
