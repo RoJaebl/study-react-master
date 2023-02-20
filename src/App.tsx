@@ -1,6 +1,5 @@
-import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import styled, { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/ 
@@ -62,6 +61,7 @@ color: ${(props) => props.theme.textColor};
 }
 a{
     text-decoration: none;
+	color: inherit;
 }
 `;
 
