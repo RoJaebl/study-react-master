@@ -1,8 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Container, Header, Loader, Title } from "./Coins";
 
 function Coin() {
+    const [loading, setLoading] = useState(true);
     const { coinId } = useParams();
-    console.log(coinId);
-    return <h1>Coin: {coinId}</h1>;
+    const { state } = useLocation();
+    return (
+        <Container>
+            <Header>
+                <Title>{state?.name || "Loading..."}</Title>
+            </Header>
+            {loading ? <Loader>Loading...</Loader> : null}
+        </Container>
+    );
 }
 export default Coin;
