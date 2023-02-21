@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins, ICoin } from "../api";
 
 const Container = styled.div`
     padding: 0px 20px;
@@ -36,7 +37,6 @@ const Title = styled.h1`
     font-size: 2em;
     color: ${(props) => props.theme.accentColor};
 `;
-
 const Loader = styled.div`
     font-size: 2em;
     text-align: center;
@@ -44,45 +44,23 @@ const Loader = styled.div`
     margin-top: 20px;
     display: block;
 `;
-
 const CoinImg = styled.img`
     width: 35px;
     height: 35px;
     margin-right: 10px;
 `;
-
-const coins = [];
-interface ICoin {
-    id: string;
-    name: string;
-    symbol: string;
-    rank: number;
-    is_new: boolean;
-    is_active: boolean;
-    type: string;
-}
 function Coins() {
-    const [coins, setCoins] = useState<ICoin[]>([]);
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        (async () => {
-            const json = await fetch(
-                "https://api.coinpaprika.com/v1/coins"
-            ).then((rep) => rep.json());
-            setCoins(json.slice(0, 100));
-            setLoading(false);
-        })();
-    }, []);
+    const { isLoading, data: coins } = useQuery(["allCoins"], fetchCoins);
     return (
         <Container>
             <Header>
                 <Title>코인</Title>
             </Header>
-            {loading ? (
+            {isLoading ? (
                 <Loader>Loading...</Loader>
             ) : (
                 <ConisList>
-                    {coins.map((coin) => (
+                    {coins?.map((coin) => (
                         <Coin key={coin.id}>
                             <Link to={`${coin.id}`} state={{ name: coin.name }}>
                                 <CoinImg

@@ -1,64 +1,9 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useMatch } from "react-router-dom";
 import { Outlet, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchCoinTickers } from "../api";
 import { Container, Header, Loader, Title } from "./Coins";
-
-interface IUSD {
-    price: number;
-    volume_24h: number;
-    volume_24h_change_24h: number;
-    market_cap: number;
-    market_cap_change_24h: number;
-    percent_change_15m: number;
-    percent_change_30m: number;
-    percent_change_1h: number;
-    percent_change_6h: number;
-    percent_change_12h: number;
-    percent_change_24h: number;
-    percent_change_7d: number;
-    percent_change_30d: number;
-    percent_change_1y: number;
-    ath_price: number;
-    ath_date: string;
-    percent_from_price_ath: number;
-}
-interface ICoinData {
-    id: string;
-    name: string;
-    symbol: string;
-    rank: number;
-    is_new: boolean;
-    is_active: boolean;
-    type: string;
-    logo: string;
-    description: string;
-    message: string;
-    open_source: boolean;
-    started_at: string;
-    development_status: string;
-    hardware_wallet: boolean;
-    proof_type: string;
-    org_structure: string;
-    hash_algorithm: string;
-    first_data_at: string;
-    last_data_at: string;
-}
-interface IPriceData {
-    id: string;
-    name: string;
-    symbol: string;
-    rank: number;
-    circulating_supply: number;
-    total_supply: number;
-    max_supply: number;
-    beta_value: number;
-    first_data_at: string;
-    last_updated: string;
-    quotes: {
-        USD: IUSD;
-    };
-}
 
 const Overview = styled.div`
     display: flex;
@@ -102,82 +47,97 @@ const Tab = styled.span<{ isActive: boolean }>`
     }
 `;
 function Coin() {
-    const [loading, setLoading] = useState(true);
     const { coinId } = useParams();
     const { state } = useLocation();
-    const [coinInfo, setCoinInfo] = useState<ICoinData>();
-    const [priceInfo, setPriceInfo] = useState<IPriceData>();
     const priceMatch = useMatch(`/:coinId/price`);
     const chartMatch = useMatch(`/:coinId/chart`);
+    const { isLoading: infoIsLoading, data: infoData } = useQuery(
+        ["info", coinId],
+        () => fetchCoinInfo(`${coinId}`)
+    );
+    const { isLoading: tickersIsLoading, data: tickersData } = useQuery(
+        ["tickers", coinId],
+        () => fetchCoinTickers(`${coinId}`)
+    );
+    const isLoading = infoIsLoading || tickersIsLoading;
     const formatter = new Intl.NumberFormat("ko", {
         notation: "compact",
         compactDisplay: "long",
     });
-    useEffect(() => {
-        (async () => {
-            const coinData = await fetch(
-                `https://api.coinpaprika.com/v1/coins/${coinId}`
-            ).then((rep) => rep.json());
-            const priceData = await (
-                await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-            ).json();
-            setCoinInfo(coinData);
-            setPriceInfo(priceData);
-            setLoading(false);
-        })();
-    }, [coinId]);
+    // const [loading, setLoading] = useState(true);
+    // const [coinInfo, setCoinInfo] = useState<ICoinData>();
+    // const [priceInfo, setPriceInfo] = useState<IPriceData>();
+    // useEffect(() => {
+    //     (async () => {
+
+    //         const coinData: ICoinData = await fetch(`${BASE_URL}/coins/${coinId}`).then(
+    //             (rep) => rep.json()
+    //         );
+    //         const priceData: IPriceData = await (
+    //             await fetch(`${BASE_URL}/tickers/${coinId}`)
+    //         ).json();
+    //         setCoinInfo(coinData);
+    //         setPriceInfo(priceData);
+    //         setLoading(false);
+    //     })();
+    // }, [coinId]);
     return (
         <Container>
             <Header>
                 <Title>{state?.name || "Loading..."}</Title>
             </Header>
-            {loading ? <Loader>Loading...</Loader> : null}
-            <Overview>
-                <OverviewItem>
-                    <span>Rank:</span>
-                    <span>{coinInfo ? coinInfo.rank : "-"}</span>
-                </OverviewItem>
-                <OverviewItem>
-                    <span>Sumbol:</span>
-                    <span>{coinInfo ? coinInfo.symbol : "-"}</span>
-                </OverviewItem>
-                <OverviewItem>
-                    <span>Open source:</span>
-                    <span>
-                        {coinInfo
-                            ? `${coinInfo.open_source ? "Yes" : "No"}`
-                            : "-"}
-                    </span>
-                </OverviewItem>
-            </Overview>
-            <Description>{coinInfo?.description}</Description>
-            <Overview>
-                <OverviewItem>
-                    <span>Total Suply:</span>
-                    <span>
-                        {priceInfo
-                            ? formatter.format(priceInfo.total_supply)
-                            : "-"}
-                    </span>
-                </OverviewItem>
-                <OverviewItem>
-                    <span>Max Supply:</span>
-                    <span>
-                        {priceInfo
-                            ? formatter.format(priceInfo.max_supply)
-                            : "-"}
-                    </span>
-                </OverviewItem>
-            </Overview>
-            <Tabs>
-                <Tab isActive={chartMatch !== null}>
-                    <Link to="chart">Chart</Link>
-                </Tab>
-                <Tab isActive={priceMatch !== null}>
-                    <Link to="price">Price</Link>
-                </Tab>
-            </Tabs>
-            <Outlet />
+            {isLoading ? (
+                <Loader>Loading...</Loader>
+            ) : (
+                <>
+                    <Overview>
+                        <OverviewItem>
+                            <span>Rank:</span>
+                            <span>{infoData ? infoData.rank : "-"}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <span>Sumbol:</span>
+                            <span>{infoData ? infoData.symbol : "-"}</span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <span>Open source:</span>
+                            <span>
+                                {infoData
+                                    ? `${infoData.open_source ? "Yes" : "No"}`
+                                    : "-"}
+                            </span>
+                        </OverviewItem>
+                    </Overview>
+                    <Description>{infoData?.description}</Description>
+                    <Overview>
+                        <OverviewItem>
+                            <span>Total Suply:</span>
+                            <span>
+                                {tickersData
+                                    ? formatter.format(tickersData.total_supply)
+                                    : "-"}
+                            </span>
+                        </OverviewItem>
+                        <OverviewItem>
+                            <span>Max Supply:</span>
+                            <span>
+                                {tickersData
+                                    ? formatter.format(tickersData.max_supply)
+                                    : "-"}
+                            </span>
+                        </OverviewItem>
+                    </Overview>
+                    <Tabs>
+                        <Tab isActive={chartMatch !== null}>
+                            <Link to="chart">Chart</Link>
+                        </Tab>
+                        <Tab isActive={priceMatch !== null}>
+                            <Link to="price">Price</Link>
+                        </Tab>
+                    </Tabs>
+                    <Outlet />
+                </>
+            )}
         </Container>
     );
 }
