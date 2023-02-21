@@ -69,7 +69,7 @@ function Coins() {
         (async () => {
             const json = await fetch(
                 "https://api.coinpaprika.com/v1/coins"
-            ).then((response) => response.json());
+            ).then((rep) => rep.json());
             setCoins(json.slice(0, 100));
             setLoading(false);
         })();
