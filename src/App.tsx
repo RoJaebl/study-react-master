@@ -67,12 +67,11 @@ a{
 `;
 
 function App() {
-	
     return (
         <>
             <GlobalStyle />
             <Outlet />
-			<ReactQueryDevtools initialIsOpen={true} />
+            {/* <ReactQueryDevtools initialIsOpen={true} /> */}
         </>
     );
 }

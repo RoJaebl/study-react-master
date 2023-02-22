@@ -64,23 +64,6 @@ function Coin() {
         notation: "compact",
         compactDisplay: "long",
     });
-    // const [loading, setLoading] = useState(true);
-    // const [coinInfo, setCoinInfo] = useState<ICoinData>();
-    // const [priceInfo, setPriceInfo] = useState<IPriceData>();
-    // useEffect(() => {
-    //     (async () => {
-
-    //         const coinData: ICoinData = await fetch(`${BASE_URL}/coins/${coinId}`).then(
-    //             (rep) => rep.json()
-    //         );
-    //         const priceData: IPriceData = await (
-    //             await fetch(`${BASE_URL}/tickers/${coinId}`)
-    //         ).json();
-    //         setCoinInfo(coinData);
-    //         setPriceInfo(priceData);
-    //         setLoading(false);
-    //     })();
-    // }, [coinId]);
     return (
         <Container>
             <Header>
@@ -129,13 +112,17 @@ function Coin() {
                     </Overview>
                     <Tabs>
                         <Tab isActive={chartMatch !== null}>
-                            <Link to="chart">Chart</Link>
+                            <Link to="chart" state={{ coinId }}>
+                                Chart
+                            </Link>
                         </Tab>
                         <Tab isActive={priceMatch !== null}>
-                            <Link to="price">Price</Link>
+                            <Link to="price" state={{ coinId }}>
+                                Price
+                            </Link>
                         </Tab>
                     </Tabs>
-                    <Outlet />
+                    <Outlet context={{ coinId: coinId }} />
                 </>
             )}
         </Container>

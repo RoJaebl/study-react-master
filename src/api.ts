@@ -10,13 +10,12 @@ export interface ICoin {
     type: string;
 }
 export async function fetchCoins() {
-    const coins: ICoin[] = await fetch(`${BASE_URL}/coins`).then((rep) =>
-        rep.json()
-    );
-    return coins.slice(0, 100);
+    return (
+        (await fetch(`${BASE_URL}/coins`).then((req) => req.json())) as ICoin[]
+    ).splice(0, 100);
 }
 
-interface ICoinData {
+interface ICoinInfo {
     id: string;
     name: string;
     symbol: string;
@@ -38,10 +37,9 @@ interface ICoinData {
     last_data_at: string;
 }
 export async function fetchCoinInfo(coinId: string) {
-    const coinData: ICoinData = await fetch(`${BASE_URL}/coins/${coinId}`).then(
-        (rep) => rep.json()
-    );
-    return coinData;
+    return (await fetch(`${BASE_URL}/coins/${coinId}`).then((req) =>
+        req.json()
+    )) as ICoinInfo;
 }
 
 interface IUSD {
@@ -63,7 +61,7 @@ interface IUSD {
     ath_date: string;
     percent_from_price_ath: number;
 }
-interface IPriceData {
+interface ICoinTickers {
     id: string;
     name: string;
     symbol: string;
@@ -80,8 +78,15 @@ interface IPriceData {
 }
 
 export async function fetchCoinTickers(coinId: string) {
-    const priceData: IPriceData = await (
-        await fetch(`${BASE_URL}/tickers/${coinId}`)
-    ).json();
-    return priceData;
+    return (await fetch(`${BASE_URL}/tickers/${coinId}`).then((req) =>
+        req.json()
+    )) as ICoinTickers;
+}
+
+export async function fetchCoinHistory(coinId: string) {
+    const endDate = Math.floor(Date.now() / 1000);
+    const startDate = endDate - 60 * 60 * 24 * 7;
+    return await fetch(
+        `${BASE_URL}/coins/${coinId}/ohlcv/historical/start=${startDate}&end=${endDate}`
+    ).then((req) => req.json());
 }
