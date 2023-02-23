@@ -71,7 +71,7 @@ function App() {
         <>
             <GlobalStyle />
             <Outlet />
-            {/* <ReactQueryDevtools initialIsOpen={true} /> */}
+            <ReactQueryDevtools initialIsOpen={true} />
         </>
     );
 }

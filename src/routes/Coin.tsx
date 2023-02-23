@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 import { Link, useMatch } from "react-router-dom";
-import { Outlet, useLocation, useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoinTickers } from "../api";
+import { intlNumberKo } from "../components/intl";
 import { Container, Header, Loader, Title } from "./Coins";
 
 const Overview = styled.div`
@@ -46,28 +48,36 @@ const Tab = styled.span<{ isActive: boolean }>`
         display: block;
     }
 `;
+
+export interface ICoinContext {
+    coinId: string;
+    name: string;
+}
+
 function Coin() {
     const { coinId } = useParams();
-    const { state } = useLocation();
     const priceMatch = useMatch(`/:coinId/price`);
-    const chartMatch = useMatch(`/:coinId/chart`);
+    const chartMatch = useMatch(`/:coinId/chart/*`);
     const { isLoading: infoIsLoading, data: infoData } = useQuery(
         ["info", coinId],
         () => fetchCoinInfo(`${coinId}`)
     );
     const { isLoading: tickersIsLoading, data: tickersData } = useQuery(
         ["tickers", coinId],
-        () => fetchCoinTickers(`${coinId}`)
+        () => fetchCoinTickers(`${coinId}`),
+        {
+            refetchInterval: 5000,
+        }
     );
     const isLoading = infoIsLoading || tickersIsLoading;
-    const formatter = new Intl.NumberFormat("ko", {
-        notation: "compact",
-        compactDisplay: "long",
-    });
+    const name = infoData?.name || tickersData?.name;
     return (
         <Container>
+            <Helmet>
+                <title>{name || "Loading..."}</title>
+            </Helmet>
             <Header>
-                <Title>{state?.name || "Loading..."}</Title>
+                <Title>{name || "Loading..."}</Title>
             </Header>
             {isLoading ? (
                 <Loader>Loading...</Loader>
@@ -83,11 +93,9 @@ function Coin() {
                             <span>{infoData ? infoData.symbol : "-"}</span>
                         </OverviewItem>
                         <OverviewItem>
-                            <span>Open source:</span>
+                            <span>Price:</span>
                             <span>
-                                {infoData
-                                    ? `${infoData.open_source ? "Yes" : "No"}`
-                                    : "-"}
+                                {tickersData?.quotes.USD.price.toFixed(8)}
                             </span>
                         </OverviewItem>
                     </Overview>
@@ -97,7 +105,9 @@ function Coin() {
                             <span>Total Suply:</span>
                             <span>
                                 {tickersData
-                                    ? formatter.format(tickersData.total_supply)
+                                    ? intlNumberKo.format(
+                                          tickersData.total_supply
+                                      )
                                     : "-"}
                             </span>
                         </OverviewItem>
@@ -105,27 +115,31 @@ function Coin() {
                             <span>Max Supply:</span>
                             <span>
                                 {tickersData
-                                    ? formatter.format(tickersData.max_supply)
+                                    ? intlNumberKo.format(
+                                          tickersData.max_supply
+                                      )
                                     : "-"}
                             </span>
                         </OverviewItem>
                     </Overview>
                     <Tabs>
                         <Tab isActive={chartMatch !== null}>
-                            <Link to="chart" state={{ coinId }}>
-                                Chart
-                            </Link>
+                            <Link to="chart/line">Chart</Link>
                         </Tab>
                         <Tab isActive={priceMatch !== null}>
-                            <Link to="price" state={{ coinId }}>
-                                Price
-                            </Link>
+                            <Link to="price">Price</Link>
                         </Tab>
                     </Tabs>
-                    <Outlet context={{ coinId: coinId }} />
+                    <Outlet
+                        context={{
+                            coinId: coinId,
+                            name: infoData?.name,
+                        }}
+                    />
                 </>
             )}
         </Container>
     );
 }
 export default Coin;
+export { Tabs, Tab };

@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { fetchCoins, ICoin } from "../api";
+import { fetchCoins } from "../api";
 
 const Container = styled.div`
     padding: 0px 20px;
@@ -53,6 +54,9 @@ function Coins() {
     const { isLoading, data: coins } = useQuery(["allCoins"], fetchCoins);
     return (
         <Container>
+            <Helmet>
+                <title>코인</title>
+            </Helmet>
             <Header>
                 <Title>코인</Title>
             </Header>

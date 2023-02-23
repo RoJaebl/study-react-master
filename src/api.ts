@@ -1,5 +1,5 @@
 const BASE_URL = "https://api.coinpaprika.com/v1";
-
+const NOMARD_COIN_API = "https://ohlcv-api.nomadcoders.workers.dev";
 export interface ICoin {
     id: string;
     name: string;
@@ -82,11 +82,20 @@ export async function fetchCoinTickers(coinId: string) {
         req.json()
     )) as ICoinTickers;
 }
-
+export interface ICoinHistorical {
+    time_open: number;
+    time_close: number;
+    open: string;
+    high: string;
+    low: string;
+    close: string;
+    volume: string;
+    market_cap: number;
+}
 export async function fetchCoinHistory(coinId: string) {
     const endDate = Math.floor(Date.now() / 1000);
-    const startDate = endDate - 60 * 60 * 24 * 7;
-    return await fetch(
-        `${BASE_URL}/coins/${coinId}/ohlcv/historical/start=${startDate}&end=${endDate}`
-    ).then((req) => req.json());
+    const startDate = endDate - 60 * 60 * 24 * 7 * 2;
+    return (await fetch(`${NOMARD_COIN_API}?coinId=${coinId}`).then((req) =>
+        req.json()
+    )) as ICoinHistorical[];
 }

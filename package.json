@@ -8,13 +8,12 @@
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
-        "@types/jest": "^29.4.0",
-        "@types/node": "^18.13.0",
-        "@types/react": "^18.0.28",
-        "@types/react-dom": "^18.0.10",
-        "@types/styled-components": "^5.1.26",
+        "apexcharts": "^3.37.1",
+        "dayjs": "^1.11.7",
         "react": "^18.2.0",
+        "react-apexcharts": "^1.4.0",
         "react-dom": "^18.2.0",
+        "react-helmet-async": "^1.3.0",
         "react-router-dom": "6.4",
         "react-scripts": "5.0.1",
         "styled-components": "^5.3.6",
@@ -22,7 +21,13 @@
         "web-vitals": "^2.1.4"
     },
     "devDependencies": {
+        "@types/jest": "^29.4.0",
+        "@types/node": "^18.13.0",
+        "@types/react": "^18.0.28",
+        "@types/react-dom": "^18.0.10",
+        "@types/react-helmet-async": "^1.0.3",
         "@types/react-router-dom": "^5.3.3",
+        "@types/styled-components": "^5.1.26",
         "@types/styled-components-react-native": "^5.2.1"
     },
     "scripts": {

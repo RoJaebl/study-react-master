@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
 import { RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import router from "./routes/router";
@@ -13,10 +14,12 @@ const queryClient = new QueryClient();
 
 root.render(
     <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <ThemeProvider theme={theme}>
-                <RouterProvider router={router} />
-            </ThemeProvider>
-        </QueryClientProvider>
+        <ThemeProvider theme={theme}>
+            <QueryClientProvider client={queryClient}>
+                <HelmetProvider>
+                    <RouterProvider router={router} />
+                </HelmetProvider>
+            </QueryClientProvider>
+        </ThemeProvider>
     </React.StrictMode>
 );
