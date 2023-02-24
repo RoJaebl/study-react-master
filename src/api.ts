@@ -42,7 +42,7 @@ export async function fetchCoinInfo(coinId: string) {
     )) as ICoinInfo;
 }
 
-interface IUSD {
+export interface IUSD {
     price: number;
     volume_24h: number;
     volume_24h_change_24h: number;
@@ -61,7 +61,7 @@ interface IUSD {
     ath_date: string;
     percent_from_price_ath: number;
 }
-interface ICoinTickers {
+export interface ICoinTickers {
     id: string;
     name: string;
     symbol: string;

@@ -7,7 +7,7 @@ const intlTimeKo = new Intl.DateTimeFormat("ko", {
     timeStyle: "short",
 });
 const intlNumberEn = new Intl.NumberFormat("en", {
-    notation: "standard",
+    notation: "compact",
     compactDisplay: "short",
 });
 export { intlNumberKo, intlTimeKo, intlNumberEn };

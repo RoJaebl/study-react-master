@@ -66,7 +66,12 @@ function Coins() {
                 <ConisList>
                     {coins?.map((coin) => (
                         <Coin key={coin.id}>
-                            <Link to={`${coin.id}`} state={{ name: coin.name }}>
+                            <Link
+                                to={`${coin.id}`}
+                                state={{
+                                    name: coin.name,
+                                }}
+                            >
                                 <CoinImg
                                     src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`}
                                 />
@@ -80,4 +85,4 @@ function Coins() {
     );
 }
 export default Coins;
-export { Container, Header, Title, Loader };
+export { Container, Header, Title, Loader, CoinImg };
