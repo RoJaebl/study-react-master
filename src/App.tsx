@@ -1,6 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 import { ThemeProvider } from "styled-components";
 import { darkTheme } from "./theme";
+import ToDoList from "./ToDoList";
 
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/ 
@@ -70,6 +71,7 @@ function App() {
         <>
             <ThemeProvider theme={darkTheme}>
                 <GlobalStyle />
+                <ToDoList />
             </ThemeProvider>
         </>
     );
