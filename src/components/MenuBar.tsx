@@ -1,8 +1,10 @@
 import { faHouse, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 import styled from "styled-components";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import { isDarkAtom } from "../routes/atom";
 
 const MenuBar = styled.div`
     display: flex;
@@ -12,14 +14,13 @@ const MenuBar = styled.div`
     top: 20px;
     left: -60px;
     width: 70px;
-    background-color: white;
+    background-color: ${(props) => props.theme.bgColor};
     padding: 5px;
     border-radius: 0px 10px 10px 0px;
-    box-shadow: 1px 2px 3px 2px rgba(38, 50, 56, 0.5);
+    box-shadow: 1px 2px 3px 2px ${(props) => props.theme.cardBoard};
     transition: all 0.5s;
     &:hover {
         left: 0px;
-        transition: all 0.4s;
     }
 `;
 const MenuItem = styled.div`
@@ -29,14 +30,16 @@ const MenuItem = styled.div`
     width: 50px;
     height: 50px;
     border-radius: 25px;
-    color: rgb(38, 50, 56);
+    color: ${(props) => props.theme.textColor};
     margin: 5px;
+    &:hover {
+        cursor: pointer;
+    }
 `;
-interface IMenuProps {
-    toggleTheme: () => void;
-    isDark: boolean;
-}
-export function Menu({ toggleTheme, isDark }: IMenuProps) {
+export function Menu() {
+    const isDark = useRecoilValue(isDarkAtom);
+    const setIsDark = useSetRecoilState(isDarkAtom);
+    const homeMatch = useMatch("/");
     return (
         <MenuBar>
             <Helmet>
@@ -45,12 +48,17 @@ export function Menu({ toggleTheme, isDark }: IMenuProps) {
                     crossOrigin="anonymous"
                 ></script>
             </Helmet>
-            <MenuItem className="">
-                <Link to="/">
-                    <FontAwesomeIcon icon={faHouse} size="2x" />
-                </Link>
-            </MenuItem>
-            <MenuItem onClick={toggleTheme}>
+            {!homeMatch ? (
+                <MenuItem className="">
+                    <Link to="/">
+                        <FontAwesomeIcon icon={faHouse} size="2x" />
+                    </Link>
+                </MenuItem>
+            ) : (
+                <></>
+            )}
+
+            <MenuItem onClick={() => setIsDark((current) => !current)}>
                 {isDark ? (
                     <FontAwesomeIcon icon={faMoon} size="2x" />
                 ) : (

@@ -4,7 +4,8 @@ import { createGlobalStyle } from "styled-components";
 import Menu from "./components/MenuBar";
 import { ThemeProvider } from "styled-components";
 import { darkTheme, lightTheme } from "./theme";
-import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./routes/atom";
 
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/ 
@@ -70,16 +71,13 @@ a{
 }
 `;
 function App() {
-    const [isDark, setIsDark] = useState(false);
-    const toggleTheme = () => {
-        setIsDark((current) => !current);
-    };
+    const isDark = useRecoilValue(isDarkAtom);
     return (
         <>
             <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
                 <GlobalStyle />
-                <Outlet context={{ isDark }} />
-                <Menu toggleTheme={toggleTheme} isDark={isDark} />
+                <Outlet />
+                <Menu />
                 <ReactQueryDevtools initialIsOpen={true} />
             </ThemeProvider>
         </>

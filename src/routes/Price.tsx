@@ -35,12 +35,13 @@ const CoinPercent = styled.span<{
     text-transform: uppercase;
     font-size: 1em;
     font-weight: 400;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: ${(props) => props.theme.cardBoard};
     padding: 15px 0px;
     border-radius: 10px;
     color: ${(props) => (props.isSurplus ? "#00b746" : "#ef403c")};
     animation: ${CoinItemAnime} 0.8s ${(props) => props.anime?.delay}
         cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    transition: all 0.5s;
 `;
 const CoinMarket = styled.span<{ anime?: { delay?: string } }>`
     display: flex;
@@ -49,12 +50,13 @@ const CoinMarket = styled.span<{ anime?: { delay?: string } }>`
     text-transform: uppercase;
     font-size: 1em;
     font-weight: 400;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: ${(props) => props.theme.cardBoard};
     padding: 15px 0px;
     border-radius: 10px;
     color: rgb(247, 208, 0);
     animation: ${CoinItemAnime} 0.8s ${(props) => props.anime?.delay}
         cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    transition: all 0.5s;
 `;
 
 function Price() {
