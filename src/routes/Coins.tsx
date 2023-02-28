@@ -18,15 +18,15 @@ const Header = styled.header`
 `;
 const ConisList = styled.ul``;
 const Coin = styled.li`
-    background-color: white;
-    color: black;
+    background-color: ${(props) => props.theme.cardBoard};
+    color: ${(props) => props.theme.bgColor};
     border-radius: 15px;
     margin-bottom: 10px;
+    transition: all 0.5s;
     a {
         display: flex;
         align-items: center;
         padding: 20px;
-        transition: color 0.2s ease-in;
     }
     &:hover {
         a {

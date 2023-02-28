@@ -1,19 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
-import { Link, useMatch } from "react-router-dom";
-import { Outlet, useParams } from "react-router-dom";
+import {
+    Link,
+    useMatch,
+    useOutletContext,
+    Outlet,
+    useParams,
+} from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoinInfo, fetchCoins, fetchCoinTickers } from "../api";
-import { intlNumberEn, intlNumberKo } from "../components/intl";
+import { intlNumberKo } from "../components/intl";
 import { CoinImg, Container, Header, Loader, Title } from "./Coins";
 
 const Overview = styled.div`
     display: flex;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: ${(props) => props.theme.cardBoard};
     padding: 10px 20px;
     margin: 25px 0px;
     border-radius: 10px;
+    color: ${(props) => props.theme.bgColor};
+    transition: all 0.5s;
 `;
 const OverviewItem = styled.div`
     display: flex;
@@ -36,11 +43,12 @@ const Tab = styled.span<{ isActive: boolean }>`
     text-transform: uppercase;
     font-size: 1em;
     font-weight: 400;
-    background-color: rgba(0, 0, 0, 0.5);
     padding: 7px 0px;
     border-radius: 10px;
+    background-color: ${(props) => props.theme.cardBoard};
     color: ${(props) =>
-        props.isActive ? props.theme.accentColor : props.theme.textColor};
+        props.isActive ? props.theme.accentColor : props.theme.bgColor};
+    transition: all 0.5s;
     a {
         display: block;
     }

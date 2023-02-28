@@ -2,8 +2,11 @@ import { useOutletContext } from "react-router-dom";
 import ApexCharts, { Props } from "react-apexcharts";
 import { Helmet } from "react-helmet-async";
 import { IChartContext } from "./Chart";
+import { isDarkAtom } from "./atom";
+import { useRecoilValue } from "recoil";
 
 export default function LineChart() {
+    const isDark = useRecoilValue(isDarkAtom);
     const { coinId, name, histories } = useOutletContext() as IChartContext;
     const { type, series, options } = {
         type: "line",
@@ -23,7 +26,7 @@ export default function LineChart() {
                 categories: histories?.map((history) => history.time_close),
             },
             yaxis: { labels: { show: false } },
-            theme: { mode: "dark" },
+            theme: { mode: isDark ? "dark" : "light" },
             chart: {
                 height: 300,
                 width: 500,

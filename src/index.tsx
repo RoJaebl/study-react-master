@@ -3,9 +3,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { RouterProvider } from "react-router-dom";
-import { ThemeProvider } from "styled-components";
 import router from "./routes/router";
-import { theme } from "./theme";
+import { RecoilRoot } from "recoil";
 
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl as Element);
@@ -14,12 +13,12 @@ const queryClient = new QueryClient();
 
 root.render(
     <React.StrictMode>
-        <ThemeProvider theme={theme}>
+        <RecoilRoot>
             <QueryClientProvider client={queryClient}>
                 <HelmetProvider>
                     <RouterProvider router={router} />
                 </HelmetProvider>
             </QueryClientProvider>
-        </ThemeProvider>
+        </RecoilRoot>
     </React.StrictMode>
 );

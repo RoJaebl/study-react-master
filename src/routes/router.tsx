@@ -7,6 +7,9 @@ import Coins from "./Coins";
 import LineChart from "./LineChart";
 import Price from "./Price";
 
+export interface IRouterProps {
+    isDark: boolean;
+}
 const router = createBrowserRouter([
     {
         path: "/",

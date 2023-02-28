@@ -1,8 +1,11 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Helmet } from "react-helmet-async";
 import { Outlet } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import Menu from "./components/MenuBar";
+import { ThemeProvider } from "styled-components";
+import { darkTheme, lightTheme } from "./theme";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./routes/atom";
 
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/ 
@@ -67,14 +70,16 @@ a{
 	color: inherit;
 }
 `;
-
 function App() {
+    const isDark = useRecoilValue(isDarkAtom);
     return (
         <>
-            <GlobalStyle />
-            <Outlet />
-            <Menu />
-            <ReactQueryDevtools initialIsOpen={true} />
+            <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+                <GlobalStyle />
+                <Outlet />
+                <Menu />
+                <ReactQueryDevtools initialIsOpen={true} />
+            </ThemeProvider>
         </>
     );
 }

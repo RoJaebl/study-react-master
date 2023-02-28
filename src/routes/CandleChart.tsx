@@ -3,8 +3,11 @@ import ApexCharts, { Props } from "react-apexcharts";
 import { Helmet } from "react-helmet-async";
 import { IChartContext } from "./Chart";
 import dayjs from "dayjs";
+import { isDarkAtom } from "./atom";
+import { useRecoilValue } from "recoil";
 
 export default function CandleChart() {
+    const isDark = useRecoilValue(isDarkAtom);
     const { coinId, name, histories } = useOutletContext() as IChartContext;
     const { type, series, options } = {
         type: "candlestick",
@@ -24,7 +27,7 @@ export default function CandleChart() {
             },
         ],
         options: {
-            theme: { mode: "dark" },
+            theme: { mode: isDark ? "dark" : "light" },
             plotOptions: {
                 candlestick: {
                     colors: {
