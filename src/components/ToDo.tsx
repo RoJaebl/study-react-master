@@ -15,7 +15,7 @@ function ToDo({ text, id, category }: IToDo) {
         setToDos([...head, newToDo, ...tail]);
     };
     return (
-        <li>
+        <li style={{ listStyle: "none" }}>
             <span>{text}</span>
             {category !== "TO_DO" && (
                 <button name="TO_DO" onClick={onClick}>

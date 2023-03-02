@@ -1,8 +1,9 @@
 import CreateToDo from "./CreateToDo";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import ToDo from "./ToDo";
-import { toDoSelector, toDoState } from "../atoms";
+import { categoryState, IToDo, toDoSelector, toDoState } from "../atoms";
 import styled from "styled-components";
+import React from "react";
 
 const Container = styled.div`
     display: flex;
@@ -30,34 +31,35 @@ const DividLine = styled.hr`
     border-radius: 2px;
     padding: 1px;
 `;
+const ToDoSelector = styled.select`
+    border: 1px solid #cccccc;
+    outline: 0;
+    height: 20px;
+    width: 160px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-weight: 600;
+`;
 function ToDoList() {
-    const { to_do, doing, done } = useRecoilValue(toDoSelector);
+    const toDos = useRecoilValue(toDoSelector);
+    const [category, setCategory] = useRecoilState(categoryState);
+    const onInput = (e: React.FormEvent<HTMLSelectElement>) => {
+        setCategory(e.currentTarget.value as IToDo["category"]);
+    };
+    console.log(category);
     return (
         <Container>
             <HeadLine>To Dos</HeadLine>
             <DividLine />
+            <ToDoSelector value={category} onInput={onInput} name="" id="">
+                <option value="TO_DO">To Do</option>
+                <option value="DOING">Doing</option>
+                <option value="DONE">Done</option>
+            </ToDoSelector>
             <CreateToDo />
-            <Category>To Do</Category>
-            <ul>
-                {to_do.map((toDo) => (
-                    <ToDo key={toDo.id} {...toDo} />
-                ))}
-            </ul>
-            <DividLine />
-            <Category>Doing</Category>
-            <ul>
-                {doing.map((toDo) => (
-                    <ToDo key={toDo.id} {...toDo} />
-                ))}
-            </ul>
-            <DividLine />
-            <Category>Done</Category>
-            <ul>
-                {done.map((toDo) => (
-                    <ToDo key={toDo.id} {...toDo} />
-                ))}
-            </ul>
-            <DividLine />
+            {toDos?.map((toDo) => (
+                <ToDo key={toDo.id} {...toDo} />
+            ))}
         </Container>
     );
 }
