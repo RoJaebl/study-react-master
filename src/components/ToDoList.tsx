@@ -1,7 +1,7 @@
 import CreateToDo from "./CreateToDo";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import ToDo from "./ToDo";
-import { categoryState, IToDo, toDoSelector, toDoState } from "../atoms";
+import { categoryState, ECategories, toDoSelector } from "../atoms";
 import styled from "styled-components";
 import React from "react";
 
@@ -17,13 +17,6 @@ const HeadLine = styled.h1`
     font-size: 2em;
     font-weight: 600;
     color: ${(props) => props.theme.textColor};
-`;
-const Category = styled.h2`
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: 500;
-    color: ${(props) => props.theme.textColor};
-    padding: 10px;
 `;
 const DividLine = styled.hr`
     width: 100%;
@@ -44,17 +37,16 @@ function ToDoList() {
     const toDos = useRecoilValue(toDoSelector);
     const [category, setCategory] = useRecoilState(categoryState);
     const onInput = (e: React.FormEvent<HTMLSelectElement>) => {
-        setCategory(e.currentTarget.value as IToDo["category"]);
+        setCategory(e.currentTarget.value as ECategories);
     };
-    console.log(category);
     return (
         <Container>
-            <HeadLine>To Dos</HeadLine>
+            <HeadLine>To Do List</HeadLine>
             <DividLine />
             <ToDoSelector value={category} onInput={onInput} name="" id="">
-                <option value="TO_DO">To Do</option>
-                <option value="DOING">Doing</option>
-                <option value="DONE">Done</option>
+                <option value={ECategories.TO_DO}>To Do</option>
+                <option value={ECategories.DOING}>Doing</option>
+                <option value={ECategories.DONE}>Done</option>
             </ToDoSelector>
             <CreateToDo />
             {toDos?.map((toDo) => (
