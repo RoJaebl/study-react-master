@@ -1,5 +1,8 @@
+import React from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { createGlobalStyle } from "styled-components";
 import { ThemeProvider } from "styled-components";
+import { hourSelector, minuteState } from "./atoms";
 import { darkTheme } from "./theme";
 
 const GlobalStyle = createGlobalStyle`
@@ -66,12 +69,30 @@ a{
 }
 `;
 function App() {
+    const [minutes, setMinutes] = useRecoilState(minuteState);
+    const [hours, setHours] = useRecoilState(hourSelector);
+    const onMinutesChange = (e: React.FormEvent<HTMLInputElement>) =>
+        setMinutes(+e.currentTarget.value);
+    const onHoursChange = (e: React.FormEvent<HTMLInputElement>) =>
+        setHours(+e.currentTarget.value);
     return (
-        <>
+        <div>
             <ThemeProvider theme={darkTheme}>
                 <GlobalStyle />
             </ThemeProvider>
-        </>
+            <input
+                value={minutes}
+                onChange={onMinutesChange}
+                type="number"
+                placeholder="Minutes"
+            />
+            <input
+                value={hours}
+                onChange={onHoursChange}
+                type="number"
+                placeholder="Hours"
+            />
+        </div>
     );
 }
 
