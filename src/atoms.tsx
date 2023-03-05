@@ -1,5 +1,7 @@
 import { atom, selector } from "recoil";
 
+const TO_DO_STORAGY = "toDoStoragy";
+
 export enum ECategories {
     "TO_DO" = "TO_DO",
     "DOING" = "DOING",
@@ -15,9 +17,16 @@ export const categoryState = atom<ECategories>({
     key: "category",
     default: ECategories.TO_DO,
 });
+
 const toDoState = atom<IToDo[]>({
     key: "toDo",
-    default: [],
+    default: JSON.parse(localStorage.getItem(TO_DO_STORAGY) ?? `[]`),
+    effects: [
+        ({ onSet }) =>
+            onSet((newToDo) =>
+                localStorage.setItem(TO_DO_STORAGY, JSON.stringify(newToDo))
+            ),
+    ],
 });
 
 export const toDoSelector = selector({
@@ -25,5 +34,5 @@ export const toDoSelector = selector({
     get: ({ get }) =>
         get(toDoState).filter((toDo) => toDo.category === get(categoryState)),
 });
-export { toDoState };
+export { toDoState, TO_DO_STORAGY };
 export type { IToDo };
