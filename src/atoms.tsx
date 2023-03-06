@@ -6,8 +6,8 @@ interface IToDos {
 const toDoState = atom<IToDos>({
     key: "toDo",
     default: {
-        to_do: ["a", "b"],
-        diubg: ["c", "d", "e"],
+        "to do": ["a", "b"],
+        doing: ["c", "d", "e"],
         done: ["f"],
     },
 });

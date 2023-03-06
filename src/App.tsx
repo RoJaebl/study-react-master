@@ -6,47 +6,52 @@ import Board from "./Components/Board";
 
 const Wrapper = styled.div`
     display: flex;
-    max-width: 480px;
-    width: 100%;
+    width: 100vw;
     margin: 0 auto;
     justify-content: center;
     align-items: center;
     height: 100vh;
 `;
-const Boards = styled.div`
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-`;
 
 function App() {
     const [toDos, setToDos] = useRecoilState(toDoState);
-    const onDragEnd = ({ destination, source }: DropResult) => {
-        // if (destination) {
-        //     setToDos((current) => {
-        //         const cloneToDos = [...current];
-        //         cloneToDos.splice(
-        //             destination.index,
-        //             0,
-        //             ...cloneToDos.splice(source.index, 1)
-        //         );
-        //         return cloneToDos;
-        //     });
-        // }
+    const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
+        if (!destination) return;
+        if (destination.droppableId === source.droppableId) {
+            setToDos((allBoards) => {
+                const cloneBoard = [...allBoards[source.droppableId]];
+                cloneBoard.splice(source.index, 1);
+                cloneBoard.splice(destination.index, 0, draggableId);
+                return {
+                    ...allBoards,
+                    [source.droppableId]: cloneBoard,
+                };
+            });
+        }
+        if (destination.droppableId !== source.droppableId) {
+            setToDos((allBoards) => {
+                const cloneBoard = [...allBoards[source.droppableId]];
+                const targetBoard = [...allBoards[destination.droppableId]];
+                cloneBoard.splice(source.index, 1);
+                targetBoard.splice(destination.index, 0, draggableId);
+                return {
+                    ...allBoards,
+                    [destination.droppableId]: targetBoard,
+                    [source.droppableId]: cloneBoard,
+                };
+            });
+        }
     };
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Wrapper>
-                <Boards>
-                    {Object.keys(toDos).map((boardId) => (
-                        <Board
-                            boardId={boardId}
-                            key={boardId}
-                            toDos={toDos[boardId]}
-                        />
-                    ))}
-                </Boards>
+                {Object.keys(toDos).map((boardId) => (
+                    <Board
+                        boardId={boardId}
+                        key={boardId}
+                        toDos={toDos[boardId]}
+                    />
+                ))}
             </Wrapper>
         </DragDropContext>
     );
