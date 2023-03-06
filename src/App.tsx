@@ -1,12 +1,8 @@
-import {
-    DragDropContext,
-    Draggable,
-    Droppable,
-    DropResult,
-} from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
+import DragabbleCard from "./Components/DragabbleCard";
 
 const Wrapper = styled.div`
     display: flex;
@@ -29,12 +25,7 @@ const Board = styled.div`
     border-radius: 5px;
     min-height: 200px;
 `;
-const Card = styled.div`
-    border-radius: 5px;
-    margin-bottom: 5px;
-    padding: 10px 10px;
-    background-color: ${(props) => props.theme.cardColor};
-`;
+
 function App() {
     const [toDos, setToDos] = useRecoilState(toDoState);
     const onDragEnd = ({ destination, source }: DropResult) => {
@@ -61,21 +52,11 @@ function App() {
                                 {...drops.droppableProps}
                             >
                                 {toDos.map((toDo, idx) => (
-                                    <Draggable
+                                    <DragabbleCard
                                         key={toDo}
-                                        draggableId={toDo}
                                         index={idx}
-                                    >
-                                        {(drags) => (
-                                            <Card
-                                                ref={drags.innerRef}
-                                                {...drags.draggableProps}
-                                                {...drags.dragHandleProps}
-                                            >
-                                                {toDo}
-                                            </Card>
-                                        )}
-                                    </Draggable>
+                                        toDo={toDo}
+                                    ></DragabbleCard>
                                 ))}
                                 {drops.placeholder}
                             </Board>
