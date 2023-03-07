@@ -2,6 +2,9 @@ import React, { useRef } from "react";
 import { Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DragabbleCard from "./DragabbleCard";
+import { useForm } from "react-hook-form";
+import { IToDo, toDoState } from "../atoms";
+import { useSetRecoilState } from "recoil";
 
 const Title = styled.h2`
     text-align: center;
@@ -36,20 +39,45 @@ const Area = styled.div<IAraeProps>`
     padding: 20px 10px;
     border-radius: 5px;
 `;
+const Form = styled.form`
+    width: 100%;
+    input {
+        width: 100%;
+    }
+`;
 interface IBoardProps {
-    toDos: string[];
+    toDos: IToDo[];
     boardId: string;
 }
+interface IForm {
+    toDo: string;
+}
 function Borad({ toDos, boardId }: IBoardProps) {
-    const inputRef = useRef<HTMLInputElement>(null);
-    const onClick = () => {
-        inputRef.current?.focus();
+    const setTodos = useSetRecoilState(toDoState);
+    const { register, setValue, handleSubmit } = useForm<IForm>();
+    const onValid = ({ toDo }: IForm) => {
+        const newToDo = {
+            id: Date.now(),
+            text: toDo,
+        };
+        setTodos((allBoards) => {
+            return {
+                ...allBoards,
+                [boardId]: [newToDo, ...allBoards[boardId]],
+            };
+        });
+        setValue("toDo", "");
     };
     return (
         <Wrapper>
             <Title>{boardId}</Title>
-            <input ref={inputRef} type="text" placeholder="grab me" />
-            <button onClick={onClick}></button>
+            <Form onSubmit={handleSubmit(onValid)}>
+                <input
+                    {...register("toDo", { required: true })}
+                    type="text"
+                    placeholder="Add task on Doing"
+                />
+            </Form>
             <Droppable droppableId={boardId}>
                 {(drops, snapshot) => (
                     <Area
@@ -62,9 +90,10 @@ function Borad({ toDos, boardId }: IBoardProps) {
                     >
                         {toDos.map((toDo, idx) => (
                             <DragabbleCard
-                                key={toDo}
+                                key={toDo.id}
                                 index={idx}
-                                toDo={toDo}
+                                toDoId={toDo.id}
+                                toDoText={toDo.text}
                             ></DragabbleCard>
                         ))}
                         {drops.placeholder}

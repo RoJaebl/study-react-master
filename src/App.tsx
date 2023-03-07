@@ -16,12 +16,17 @@ const Wrapper = styled.div`
 function App() {
     const [toDos, setToDos] = useRecoilState(toDoState);
     const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
+        // const toDo = toDos[source.droppableId].find(
+        //     (toDo) => toDo.id === +draggableId
+        // );
+        // if (!destination || typeof toDo === "undefined") return;
         if (!destination) return;
         if (destination.droppableId === source.droppableId) {
             setToDos((allBoards) => {
                 const cloneBoard = [...allBoards[source.droppableId]];
+                const toDo = cloneBoard[source.index];
                 cloneBoard.splice(source.index, 1);
-                cloneBoard.splice(destination.index, 0, draggableId);
+                cloneBoard.splice(destination.index, 0, toDo);
                 return {
                     ...allBoards,
                     [source.droppableId]: cloneBoard,
@@ -32,8 +37,9 @@ function App() {
             setToDos((allBoards) => {
                 const cloneBoard = [...allBoards[source.droppableId]];
                 const targetBoard = [...allBoards[destination.droppableId]];
+                const toDo = cloneBoard[source.index];
                 cloneBoard.splice(source.index, 1);
-                targetBoard.splice(destination.index, 0, draggableId);
+                targetBoard.splice(destination.index, 0, toDo);
                 return {
                     ...allBoards,
                     [destination.droppableId]: targetBoard,
