@@ -20,6 +20,8 @@ function App() {
         //     (toDo) => toDo.id === +draggableId
         // );
         // if (!destination || typeof toDo === "undefined") return;
+        // localStorage.setItem("toDos", "{id: 1, text: hello}");
+        // JSON.parse(localStorage.getItem("toDos") ?? "{}");
         if (!destination) return;
         if (destination.droppableId === source.droppableId) {
             setToDos((allBoards) => {
