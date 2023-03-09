@@ -1,5 +1,12 @@
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import {
+    DragDropContext,
+    DragStart,
+    DropResult,
+    OnDragStartResponder,
+    ResponderProvided,
+} from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
+import { start } from "repl";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
 import Board from "./Components/Board";
@@ -50,8 +57,24 @@ function App() {
             });
         }
     };
+    const onDragStart = (
+        { source: { droppableId, index } }: DragStart,
+        provided: ResponderProvided
+    ) => {
+        setToDos((allBoards) => {
+            const cloneBoard = [...allBoards[droppableId]];
+            const cloneToDo = { ...cloneBoard[index] };
+            cloneToDo.isModify = false;
+            cloneBoard.splice(index, 1);
+            cloneBoard.splice(index, 0, cloneToDo);
+            return {
+                ...allBoards,
+                [droppableId]: cloneBoard,
+            };
+        });
+    };
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
             <Wrapper>
                 {Object.keys(toDos).map((boardId) => (
                     <Board

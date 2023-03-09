@@ -1,7 +1,7 @@
 # code challenge
 
 -   [ ] taks input tag styling
--   [ ] task localStorage
+-   [x] task localStorage
 -   [ ] task delete
 -   [ ] task content modify
 -   [ ] all task delete

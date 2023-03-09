@@ -59,6 +59,7 @@ function Borad({ toDos, boardId }: IBoardProps) {
         const newToDo = {
             id: Date.now(),
             text: toDo,
+            isModify: false,
         };
         setTodos((allBoards) => {
             return {
@@ -88,12 +89,12 @@ function Borad({ toDos, boardId }: IBoardProps) {
                         ref={drops.innerRef}
                         {...drops.droppableProps}
                     >
-                        {toDos.map((toDo, idx) => (
+                        {toDos.map((toDo, index) => (
                             <DragabbleCard
                                 key={toDo.id}
-                                index={idx}
-                                toDoId={toDo.id}
-                                toDoText={toDo.text}
+                                index={index}
+                                toDo={toDo}
+                                boardId={boardId}
                             ></DragabbleCard>
                         ))}
                         {drops.placeholder}

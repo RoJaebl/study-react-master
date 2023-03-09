@@ -3,9 +3,11 @@ import { atom } from "recoil";
 export interface IToDo {
     id: number;
     text: string;
+    isModify: boolean;
 }
+type IBoardKey = string;
 interface IToDos {
-    [key: string]: IToDo[];
+    [key: IBoardKey]: IToDo[];
 }
 
 const toDoState = atom<IToDos>({
@@ -22,3 +24,4 @@ const toDoState = atom<IToDos>({
     ],
 });
 export { toDoState };
+export type { IBoardKey };
