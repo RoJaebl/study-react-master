@@ -1,8 +1,11 @@
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { IContent } from "../../atoms";
+import { boardState, IContent } from "../../atoms";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import DropContent from "../Content/DropContent";
+import React from "react";
+import { useRecoilState } from "recoil";
 
 const Wrapper = styled.div`
     display: flex;
@@ -58,7 +61,7 @@ const BoardNav = styled.div`
     height: 100%;
     padding: 5px;
 `;
-interface IDropBoardProps {
+interface IDragBoardProps {
     board: {
         id: number;
         name: string;
@@ -66,7 +69,22 @@ interface IDropBoardProps {
         contents: IContent[];
     };
 }
-function DragBoard({ board: { id, name, index, contents } }: IDropBoardProps) {
+function DragBoard({ board: { id, name, index, contents } }: IDragBoardProps) {
+    const [boards, setBoards] = useRecoilState(boardState);
+    const createContent = () => {
+        setBoards((allBorads) => {
+            let cloneBoard = { ...allBorads[index] };
+            const newContent: IContent = {
+                id: Date.now(),
+                text: Date.now() + "",
+                modify: true,
+            };
+            cloneBoard.contents = [newContent, ...cloneBoard.contents];
+            const head = allBorads.slice(0, index);
+            const tail = allBorads.slice(index + 1);
+            return [...head, cloneBoard, ...tail];
+        });
+    };
     return (
         <Draggable key={id} draggableId={id + ""} index={index}>
             {(boardDrag) => (
@@ -78,7 +96,15 @@ function DragBoard({ board: { id, name, index, contents } }: IDropBoardProps) {
                     <Title>{name}</Title>
                     <Content>
                         {contents.map((content, index) => (
-                            <ContentItem></ContentItem>
+                            <DropContent
+                                key={content.id}
+                                content={{
+                                    id: content.id,
+                                    index: index,
+                                    text: content.text,
+                                    modify: content.modify,
+                                }}
+                            />
                         ))}
                     </Content>
                     <BoardNav>
@@ -91,6 +117,7 @@ function DragBoard({ board: { id, name, index, contents } }: IDropBoardProps) {
                                     marginRight: "5px",
                                 }}
                                 icon={faSquarePlus}
+                                onClick={() => createContent()}
                             />
                             <FontAwesomeIcon
                                 style={{
