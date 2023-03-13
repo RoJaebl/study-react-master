@@ -1,9 +1,9 @@
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { boardState, IBoard } from "./atoms";
-import DropBoard from "./Components/board/DropBoard";
+import { boardState, contentState, IDnD } from "./atoms";
+import DropBoard from "./Components/Board/DropBoard";
 
 const Wrapper = styled.div`
     display: flex;
@@ -30,14 +30,60 @@ interface IForm {
 }
 function App() {
     const { register, handleSubmit, setValue } = useForm<IForm>();
-    const [boards, setBoards] = useRecoilState(boardState);
-    const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
-        //     // const toDo = boards[source.droppableId].find(
-        //     //     (toDo) => toDo.id === +draggableId
-        //     // );
-        //     // if (!destination || typeof toDo === "undefined") return;
-        //     // localStorage.setItem("boards", "{id: 1, text: hello}");
-        //     // JSON.parse(localStorage.getItem("boards") ?? "{}");
+    const setBoards = useSetRecoilState(boardState);
+    const setContents = useSetRecoilState(contentState);
+    const onDragEnd = ({
+        destination,
+        source,
+        draggableId,
+        type,
+    }: DropResult) => {
+        console.log(destination, source, draggableId);
+        if (!destination) return;
+        if (type === "CONTENTS") {
+            if (destination.droppableId === source.droppableId) {
+                setContents((allContents) => {
+                    const cpContents = [...allContents[source.droppableId]];
+                    const cpContent = { ...cpContents[source.index] };
+                    cpContents.splice(source.index, 1);
+                    cpContents.splice(destination.index, 0, cpContent);
+                    return { ...allContents, [source.droppableId]: cpContents };
+                });
+            }
+            if (destination.droppableId !== source.droppableId) {
+                setContents((allContents) => {
+                    const cpContents = [...allContents[source.droppableId]];
+                    const distContents = [
+                        ...allContents[destination.droppableId],
+                    ];
+                    const cpContent = { ...cpContents[source.index] };
+                    cpContents.splice(source.index, 1);
+                    distContents.splice(destination.index, 0, cpContent);
+                    return {
+                        ...allContents,
+                        [source.droppableId]: cpContents,
+                        [destination.droppableId]: distContents,
+                    };
+                });
+            }
+        }
+        if (type === "BOARDS") {
+            if (destination.droppableId === source.droppableId) {
+                setBoards((allBoards) => {
+                    const cpBoards = [...allBoards];
+                    const cpBoard = { ...cpBoards[source.index] };
+                    cpBoards.splice(source.index, 1);
+                    cpBoards.splice(destination.index, 0, cpBoard);
+                    return [...cpBoards];
+                });
+            }
+        }
+        // const toDo = boards[source.droppableId].find(
+        //     (toDo) => toDo.id === +draggableId
+        // );
+        // if (!destination || typeof toDo === "undefined") return;
+        // localStorage.setItem("boards", "{id: 1, text: hello}");
+        // JSON.parse(localStorage.getItem("boards") ?? "{}");
         //     if (!destination) return;
         //     if (destination.droppableId === source.droppableId) {
         //         setBoards((allBoards) => {
@@ -83,14 +129,22 @@ function App() {
     //     });
     // };
     const onValid = ({ board }: IForm) => {
+        const date = Date.now();
         setBoards((allBoards) => {
-            const newBoard: IBoard = {
-                id: Date.now(),
+            const newBoard = {
+                id: date,
                 name: board,
-                contents: [],
+                text: board,
+                modify: false,
+                dropId: "boardDropId",
+                dragId: date + "",
             };
             return [newBoard, ...allBoards];
         });
+        setContents((allContents) => ({
+            ...allContents,
+            [date + ""]: [],
+        }));
         setValue("board", "");
     };
     return (

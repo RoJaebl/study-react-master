@@ -1,25 +1,35 @@
 import { atom } from "recoil";
 
-export interface IContent {
+export interface IDnD {
     id: number;
-    text: string;
     modify: boolean;
+    dropId: string;
+    dragId: string;
+    name?: string;
+    text?: string;
 }
-export interface IBoard {
-    id: number;
-    name: string;
-    contents: IContent[];
+export interface IDnDs {
+    [key: string]: IDnD[];
 }
-export type BoardType = IBoard[];
-
-const boardState = atom<BoardType>({
-    key: "board",
-    default: JSON.parse(localStorage.getItem("board") ?? `[]`),
+const contentState = atom<IDnDs>({
+    key: "contents",
+    default: JSON.parse(localStorage.getItem("contents") ?? `{}`),
     effects: [
         ({ onSet }) =>
             onSet((newValue) =>
-                localStorage.setItem("board", JSON.stringify(newValue))
+                localStorage.setItem("contents", JSON.stringify(newValue))
             ),
     ],
 });
-export { boardState };
+const boardState = atom<IDnD[]>({
+    key: "boards",
+    default: JSON.parse(localStorage.getItem("boards") ?? `[]`),
+    effects: [
+        ({ onSet }) =>
+            onSet((newValue) =>
+                localStorage.setItem("boards", JSON.stringify(newValue))
+            ),
+    ],
+});
+
+export { boardState, contentState };

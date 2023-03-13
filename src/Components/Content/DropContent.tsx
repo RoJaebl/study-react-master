@@ -1,27 +1,40 @@
 import { useEffect } from "react";
 import { Droppable } from "react-beautiful-dnd";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { contentState, IDnD } from "../../atoms";
+import DragContent from "./DragContent";
 
-const DropArea = styled.div``;
+const DropArea = styled.div`
+    display: flex;
+    flex-direction: column;
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    overflow: scroll;
+    border-radius: 5px;
+`;
 interface IDropContentProps {
-    content: {
-        id: number;
-        index: number;
-        text: string;
-        modify: boolean;
-    };
+    dropContentId: string;
 }
-function DropContent({
-    content: { id, index, text, modify },
-}: IDropContentProps) {
-    useEffect(() => console.log(1234 + "-" + 5678), []);
+function DropContent({ dropContentId }: IDropContentProps) {
+    const contents = useRecoilValue(contentState);
     return (
-        <Droppable droppableId={id + "" + index}>
+        <Droppable droppableId={dropContentId} type={"CONTENTS"}>
             {(dropContent) => (
                 <DropArea
                     ref={dropContent.innerRef}
                     {...dropContent.droppableProps}
                 >
+                    {contents[dropContentId].map((content, index) => (
+                        <DragContent
+                            key={content.id}
+                            contents={contents[dropContentId]}
+                            dropContentId={dropContentId}
+                            dragContentId={content.dragId}
+                            index={index}
+                        />
+                    ))}
                     {dropContent.placeholder}
                 </DropArea>
             )}
