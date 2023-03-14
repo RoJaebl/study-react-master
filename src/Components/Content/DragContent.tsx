@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { contentState, IDnD } from "../../atoms";
+import { CONTENT, contentState, IContentState } from "../../atoms";
 
 const DragArea = styled.div`
     display: grid;
@@ -41,7 +41,7 @@ const TextInput = styled(Text)`
 `;
 
 interface IDragContentProps {
-    contents: IDnD[];
+    contents: IContentState[];
     dropContentId: string;
     dragContentId: string;
     index: number;
@@ -54,35 +54,50 @@ function DragContent({
 }: IDragContentProps) {
     const pText = useRef<HTMLInputElement>(null);
     const [text, setText] = useState("");
-    const setContent = useSetRecoilState(contentState);
+    const setContents = useSetRecoilState(contentState);
     const onModify = () => {
-        setContent((allContents) => {
-            const cpContents = [...allContents[dropContentId]];
-            const cpContent = { ...cpContents[index] };
-            cpContent.modify = !cpContent.modify;
-            cpContents.splice(index, 1);
-            cpContents.splice(index, 0, cpContent);
-            return { ...allContents, [dropContentId]: cpContents };
+        setContents((allContents) => {
+            let cpContents = { ...allContents[CONTENT] };
+            const cpContent = [...cpContents[dropContentId]];
+            const cpValue = { ...cpContent[index] };
+            cpValue.modify = !cpValue.modify;
+            cpContent.splice(index, 1);
+            cpContent.splice(index, 0, cpValue);
+            cpContents = { ...cpContents, [dropContentId]: cpContent };
+            return {
+                ...allContents,
+                [CONTENT]: cpContents,
+            };
         });
         setTimeout(() => {
             pText.current?.focus();
         }, 10);
     };
     const onTrash = () => {
-        setContent((allContents) => {
-            const cpContents = [...allContents[dropContentId]];
-            cpContents.splice(index, 1);
-            return { ...allContents, [dropContentId]: cpContents };
+        setContents((allContents) => {
+            let cpContents = { ...allContents[CONTENT] };
+            let cpContent = [...cpContents[dropContentId]];
+            cpContent.splice(index, 1);
+            cpContents = { ...cpContents, [dropContentId]: cpContent };
+            return {
+                ...allContents,
+                [CONTENT]: cpContents,
+            };
         });
     };
     const onCancel = () => {
-        setContent((allContents) => {
-            const cpContents = [...allContents[dropContentId]];
-            const cpContent = { ...cpContents[index] };
-            cpContent.modify = false;
-            cpContents.splice(index, 1);
-            cpContents.splice(index, 0, cpContent);
-            return { ...allContents, [dropContentId]: cpContents };
+        setContents((allContents) => {
+            let cpContents = { ...allContents[CONTENT] };
+            const cpContent = [...cpContents[dropContentId]];
+            const cpValue = { ...cpContent[index] };
+            cpValue.modify = false;
+            cpContent.splice(index, 1);
+            cpContent.splice(index, 0, cpValue);
+            cpContents = { ...cpContents, [dropContentId]: cpContent };
+            return {
+                ...allContents,
+                [CONTENT]: cpContents,
+            };
         });
         setText("");
         pText.current?.blur();
@@ -91,13 +106,18 @@ function DragContent({
         setText(e.currentTarget.value);
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setContent((allContents) => {
-            const cpContents = [...allContents[dropContentId]];
-            const cpContent = { ...cpContents[index] };
-            cpContent.text = text;
-            cpContents.splice(index, 1);
-            cpContents.splice(index, 0, cpContent);
-            return { ...allContents, [dropContentId]: cpContents };
+        setContents((allContents) => {
+            let cpContents = { ...allContents[CONTENT] };
+            const cpContent = [...cpContents[dropContentId]];
+            const cpValue = { ...cpContent[index] };
+            cpValue.text = text;
+            cpContent.splice(index, 1);
+            cpContent.splice(index, 0, cpValue);
+            cpContents = { ...cpContents, [dropContentId]: cpContent };
+            return {
+                ...allContents,
+                [CONTENT]: cpContents,
+            };
         });
         onCancel();
     };

@@ -1,8 +1,8 @@
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { boardState, contentState, IDnD } from "./atoms";
+import { BOARD, CONTENT, contentState, IBoardConent } from "./atoms";
 import DropBoard from "./Components/Board/DropBoard";
 
 const Wrapper = styled.div`
@@ -30,7 +30,6 @@ interface IForm {
 }
 function App() {
     const { register, handleSubmit, setValue } = useForm<IForm>();
-    const setBoards = useSetRecoilState(boardState);
     const setContents = useSetRecoilState(contentState);
     const onDragEnd = ({
         destination,
@@ -38,79 +37,66 @@ function App() {
         draggableId,
         type,
     }: DropResult) => {
-        console.log(destination, source, draggableId);
         if (!destination) return;
         if (type === "CONTENTS") {
             if (destination.droppableId === source.droppableId) {
                 setContents((allContents) => {
-                    const cpContents = [...allContents[source.droppableId]];
-                    const cpContent = { ...cpContents[source.index] };
-                    cpContents.splice(source.index, 1);
-                    cpContents.splice(destination.index, 0, cpContent);
-                    return { ...allContents, [source.droppableId]: cpContents };
+                    let cpContents = { ...allContents[CONTENT] };
+                    const cpContent = [...cpContents[source.droppableId]];
+                    const cpValue = { ...cpContent[source.index] };
+                    cpContent.splice(source.index, 1);
+                    cpContent.splice(destination.index, 0, cpValue);
+                    cpContents = {
+                        ...cpContents,
+                        [source.droppableId]: cpContent,
+                    };
+                    return {
+                        ...allContents,
+                        [CONTENT]: cpContents,
+                    };
                 });
             }
             if (destination.droppableId !== source.droppableId) {
                 setContents((allContents) => {
-                    const cpContents = [...allContents[source.droppableId]];
+                    let cpContents = { ...allContents[CONTENT] };
+                    const cpContent = [...cpContents[source.droppableId]];
                     const distContents = [
-                        ...allContents[destination.droppableId],
+                        ...cpContents[destination.droppableId],
                     ];
-                    const cpContent = { ...cpContents[source.index] };
-                    cpContents.splice(source.index, 1);
-                    distContents.splice(destination.index, 0, cpContent);
+                    const cpValue = { ...cpContent[source.index] };
+                    cpContent.splice(source.index, 1);
+                    distContents.splice(destination.index, 0, cpValue);
+                    cpContents = {
+                        ...cpContents,
+                        [source.droppableId]: cpContent,
+                        [destination.droppableId]: distContents,
+                    };
                     return {
                         ...allContents,
-                        [source.droppableId]: cpContents,
-                        [destination.droppableId]: distContents,
+                        [CONTENT]: cpContents,
                     };
                 });
             }
         }
         if (type === "BOARDS") {
             if (destination.droppableId === source.droppableId) {
-                setBoards((allBoards) => {
-                    const cpBoards = [...allBoards];
-                    const cpBoard = { ...cpBoards[source.index] };
-                    cpBoards.splice(source.index, 1);
-                    cpBoards.splice(destination.index, 0, cpBoard);
-                    return [...cpBoards];
+                setContents((allContents) => {
+                    let cpContents = { ...allContents[BOARD] };
+                    const cpContent = [...cpContents[`${source.droppableId}`]];
+                    const cpValue = { ...cpContent[source.index] };
+                    cpContent.splice(source.index, 1);
+                    cpContent.splice(destination.index, 0, cpValue);
+                    cpContents = {
+                        ...cpContents,
+                        [source.droppableId]: cpContent,
+                    };
+                    return {
+                        ...allContents,
+                        [BOARD]: cpContents,
+                    };
                 });
             }
         }
-        // const toDo = boards[source.droppableId].find(
-        //     (toDo) => toDo.id === +draggableId
-        // );
-        // if (!destination || typeof toDo === "undefined") return;
-        // localStorage.setItem("boards", "{id: 1, text: hello}");
-        // JSON.parse(localStorage.getItem("boards") ?? "{}");
-        //     if (!destination) return;
-        //     if (destination.droppableId === source.droppableId) {
-        //         setBoards((allBoards) => {
-        //             const cloneBoard = [...allBoards[source.droppableId]];
-        //             const toDo = cloneBoard[source.index];
-        //             cloneBoard.splice(source.index, 1);
-        //             cloneBoard.splice(destination.index, 0, toDo);
-        //             return {
-        //                 ...allBoards,
-        //                 [source.droppableId]: cloneBoard,
-        //             };
-        //         });
-        //     }
-        //     if (destination.droppableId !== source.droppableId) {
-        //         setToDos((allBoards) => {
-        //             const cloneBoard = [...allBoards[source.droppableId]];
-        //             const targetBoard = [...allBoards[destination.droppableId]];
-        //             const toDo = cloneBoard[source.index];
-        //             cloneBoard.splice(source.index, 1);
-        //             targetBoard.splice(destination.index, 0, toDo);
-        //             return {
-        //                 ...allBoards,
-        //                 [destination.droppableId]: targetBoard,
-        //                 [source.droppableId]: cloneBoard,
-        //             };
-        //         });
-        //     }
     };
     // const onDragStart = (
     //     { source: { droppableId, index } }: DragStart,
@@ -130,21 +116,26 @@ function App() {
     // };
     const onValid = ({ board }: IForm) => {
         const date = Date.now();
-        setBoards((allBoards) => {
-            const newBoard = {
-                id: date,
-                name: board,
-                text: board,
-                modify: false,
-                dropId: "boardDropId",
-                dragId: date + "",
+        setContents((allContents) => {
+            const newBoard = [
+                ...allContents[BOARD]["boardContent"],
+                {
+                    id: date,
+                    name: board,
+                    text: board,
+                    modify: false,
+                    dragId: date + "",
+                },
+            ];
+            const newContent = { ...allContents[CONTENT], [`${date}`]: [] };
+            return {
+                ...allContents,
+                [BOARD]: {
+                    boardContent: newBoard,
+                },
+                [CONTENT]: newContent,
             };
-            return [newBoard, ...allBoards];
         });
-        setContents((allContents) => ({
-            ...allContents,
-            [date + ""]: [],
-        }));
         setValue("board", "");
     };
     return (

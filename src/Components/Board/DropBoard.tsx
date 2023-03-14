@@ -1,7 +1,7 @@
 import { Droppable } from "react-beautiful-dnd";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { boardState, contentState } from "../../atoms";
+import { BOARD, contentState } from "../../atoms";
 import DragBoard from "./DragBoard";
 
 const DropArea = styled.div`
@@ -12,10 +12,10 @@ const DropArea = styled.div`
 `;
 
 function DropBoard() {
-    const boards = useRecoilValue(boardState);
+    const contents = useRecoilValue(contentState);
     return (
         <Droppable
-            droppableId="boardDropId"
+            droppableId={Object.keys(contents[BOARD]).shift() ?? "boardContent"}
             direction="horizontal"
             type={"BOARDS"}
         >
@@ -24,7 +24,7 @@ function DropBoard() {
                     ref={boardDrop.innerRef}
                     {...boardDrop.droppableProps}
                 >
-                    {boards.map((board, index) => (
+                    {contents[BOARD]["boardContent"].map((board, index) => (
                         <DragBoard
                             key={board.dragId}
                             dragBoardId={board.dragId}

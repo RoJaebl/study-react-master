@@ -1,6 +1,6 @@
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { boardState, contentState, IDnD } from "../../atoms";
+import { BOARD, CONTENT, contentState, IContent } from "../../atoms";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DropContent from "../Content/DropContent";
@@ -43,30 +43,37 @@ interface IDragBoardProps {
     index: number;
 }
 function DragBoard({ dragBoardId, index }: IDragBoardProps) {
-    const [boards, setBoards] = useRecoilState(boardState);
     const [contents, setContents] = useRecoilState(contentState);
     const createContent = () => {
+        const date = Date.now();
         setContents((allContents) => {
-            const cpContent = [...allContents[dragBoardId]];
+            let cpContents = { ...allContents[CONTENT] };
+            const cpContent = [...cpContents[dragBoardId]];
             const newContent = {
-                id: Date.now(),
+                id: date,
                 name: "",
                 text: "",
                 modify: true,
-                dropId: dragBoardId,
-                dragId: Date.now() + "",
+                dragId: date + "",
             };
+            cpContent.push(newContent);
+            cpContents = { ...cpContents, [dragBoardId]: cpContent };
             return {
                 ...allContents,
-                [dragBoardId]: [newContent, ...cpContent],
+                [CONTENT]: cpContents,
             };
         });
     };
-    const allTrash = () =>
-        setContents((allContents) => ({
-            ...allContents,
-            [dragBoardId]: [],
-        }));
+    const allTrash = () => {
+        setContents((allContents) => {
+            let cpContents = { ...allContents[CONTENT] };
+            cpContents = { ...cpContents, [dragBoardId]: [] };
+            return {
+                ...allContents,
+                [CONTENT]: cpContents,
+            };
+        });
+    };
     return (
         <Draggable draggableId={dragBoardId} index={index}>
             {(boardDrag) => (
@@ -75,7 +82,7 @@ function DragBoard({ dragBoardId, index }: IDragBoardProps) {
                     {...boardDrag.draggableProps}
                     {...boardDrag.dragHandleProps}
                 >
-                    <Title>{boards[index].name}</Title>
+                    <Title>{contents[BOARD].boardContent[index].name}</Title>
                     <DropContent dropContentId={dragBoardId} />
                     <BoardNav>
                         <div></div>

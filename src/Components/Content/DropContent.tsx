@@ -1,8 +1,7 @@
-import { useEffect } from "react";
 import { Droppable } from "react-beautiful-dnd";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { contentState, IDnD } from "../../atoms";
+import { CONTENT, contentState } from "../../atoms";
 import DragContent from "./DragContent";
 
 const DropArea = styled.div`
@@ -26,10 +25,10 @@ function DropContent({ dropContentId }: IDropContentProps) {
                     ref={dropContent.innerRef}
                     {...dropContent.droppableProps}
                 >
-                    {contents[dropContentId].map((content, index) => (
+                    {contents[CONTENT][dropContentId].map((content, index) => (
                         <DragContent
                             key={content.id}
-                            contents={contents[dropContentId]}
+                            contents={contents[CONTENT][dropContentId]}
                             dropContentId={dropContentId}
                             dragContentId={content.dragId}
                             index={index}
