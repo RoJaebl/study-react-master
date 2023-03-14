@@ -1,9 +1,9 @@
+import { MutableRefObject, RefObject } from "react";
 import { atom } from "recoil";
 
 export interface IDnD {
     id: number;
     modify: boolean;
-    dropId: string;
     dragId: string;
     name?: string;
     text?: string;
@@ -16,14 +16,14 @@ const contentState = atom<IDnDs>({
     default: JSON.parse(localStorage.getItem("contents") ?? `{}`),
     effects: [
         ({ onSet }) =>
-            onSet((newValue) =>
-                localStorage.setItem("contents", JSON.stringify(newValue))
-            ),
+            onSet((newValue) => {
+                localStorage.setItem("contents", JSON.stringify(newValue));
+            }),
     ],
 });
-const boardState = atom<IDnD[]>({
+const boardState = atom<IDnDs>({
     key: "boards",
-    default: JSON.parse(localStorage.getItem("boards") ?? `[]`),
+    default: JSON.parse(localStorage.getItem("boards") ?? `{"boardDropId":[]}`),
     effects: [
         ({ onSet }) =>
             onSet((newValue) =>

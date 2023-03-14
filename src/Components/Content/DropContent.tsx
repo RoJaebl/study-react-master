@@ -1,8 +1,7 @@
-import { useEffect } from "react";
 import { Droppable } from "react-beautiful-dnd";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { contentState, IDnD } from "../../atoms";
+import { contentState } from "../../atoms";
 import DragContent from "./DragContent";
 
 const DropArea = styled.div`

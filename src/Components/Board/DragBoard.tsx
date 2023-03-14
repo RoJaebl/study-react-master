@@ -1,12 +1,13 @@
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { boardState, contentState, IDnD } from "../../atoms";
+import { boardState, contentState } from "../../atoms";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DropContent from "../Content/DropContent";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
+import React from "react";
 
-const DragArea = styled.div`
+export const DragArea = styled.div`
     width: 200px;
     height: 400px;
     background-color: ${(props) => props.theme.boardColor};
@@ -39,10 +40,11 @@ const BoardNav = styled.div`
     padding: 5px;
 `;
 interface IDragBoardProps {
+    dropBoardId: string;
     dragBoardId: string;
     index: number;
 }
-function DragBoard({ dragBoardId, index }: IDragBoardProps) {
+function DragBoard({ dropBoardId, dragBoardId, index }: IDragBoardProps) {
     const [boards, setBoards] = useRecoilState(boardState);
     const [contents, setContents] = useRecoilState(contentState);
     const createContent = () => {
@@ -75,7 +77,7 @@ function DragBoard({ dragBoardId, index }: IDragBoardProps) {
                     {...boardDrag.draggableProps}
                     {...boardDrag.dragHandleProps}
                 >
-                    <Title>{boards[index].name}</Title>
+                    <Title>{boards[dropBoardId][index].name}</Title>
                     <DropContent dropContentId={dragBoardId} />
                     <BoardNav>
                         <div></div>
@@ -106,4 +108,4 @@ function DragBoard({ dragBoardId, index }: IDragBoardProps) {
     );
 }
 
-export default DragBoard;
+export default React.memo(DragBoard);

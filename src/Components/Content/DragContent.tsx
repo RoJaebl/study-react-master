@@ -1,6 +1,6 @@
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -52,11 +52,11 @@ function DragContent({
     dragContentId,
     index,
 }: IDragContentProps) {
-    const pText = useRef<HTMLInputElement>(null);
+    const refInput = useRef<HTMLInputElement>(null);
     const [text, setText] = useState("");
-    const setContent = useSetRecoilState(contentState);
+    const setContents = useSetRecoilState(contentState);
     const onModify = () => {
-        setContent((allContents) => {
+        setContents((allContents) => {
             const cpContents = [...allContents[dropContentId]];
             const cpContent = { ...cpContents[index] };
             cpContent.modify = !cpContent.modify;
@@ -65,18 +65,18 @@ function DragContent({
             return { ...allContents, [dropContentId]: cpContents };
         });
         setTimeout(() => {
-            pText.current?.focus();
+            refInput.current?.focus();
         }, 10);
     };
     const onTrash = () => {
-        setContent((allContents) => {
+        setContents((allContents) => {
             const cpContents = [...allContents[dropContentId]];
             cpContents.splice(index, 1);
             return { ...allContents, [dropContentId]: cpContents };
         });
     };
     const onCancel = () => {
-        setContent((allContents) => {
+        setContents((allContents) => {
             const cpContents = [...allContents[dropContentId]];
             const cpContent = { ...cpContents[index] };
             cpContent.modify = false;
@@ -85,13 +85,12 @@ function DragContent({
             return { ...allContents, [dropContentId]: cpContents };
         });
         setText("");
-        pText.current?.blur();
     };
     const onChange = (e: React.FormEvent<HTMLInputElement>) =>
         setText(e.currentTarget.value);
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setContent((allContents) => {
+        setContents((allContents) => {
             const cpContents = [...allContents[dropContentId]];
             const cpContent = { ...cpContents[index] };
             cpContent.text = text;
@@ -101,9 +100,14 @@ function DragContent({
         });
         onCancel();
     };
+    useEffect(() => {
+        if (contents[index].modify) {
+            refInput.current?.focus();
+        }
+    }, []);
     return (
         <Draggable draggableId={dragContentId} index={index}>
-            {(dragContent) => (
+            {(dragContent, snapshot) => (
                 <DragArea
                     ref={dragContent.innerRef}
                     {...dragContent.draggableProps}
@@ -120,7 +124,7 @@ function DragContent({
                         <TextInput
                             as="input"
                             type="text"
-                            ref={pText}
+                            ref={refInput}
                             placeholder={
                                 contents[index].text === ""
                                     ? `Add task on content`
@@ -147,4 +151,4 @@ function DragContent({
         </Draggable>
     );
 }
-export default DragContent;
+export default React.memo(DragContent);

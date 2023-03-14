@@ -1,9 +1,17 @@
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import {
+    DragDropContext,
+    Draggable,
+    DragStart,
+    Droppable,
+    DropResult,
+    ResponderProvided,
+} from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { boardState, contentState, IDnD } from "./atoms";
+import { boardState, contentState, IDnDs } from "./atoms";
 import DropBoard from "./Components/Board/DropBoard";
+import { DragArea as BoardDragArea } from "./Components/Board/DragBoard";
 
 const Wrapper = styled.div`
     display: flex;
@@ -11,26 +19,57 @@ const Wrapper = styled.div`
     margin: 0 auto;
     align-items: center;
     height: 100vh;
-    overflow: scroll;
-    overflow-y: hidden;
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    overflow: auto;
+`;
+
+const BoardTrash = styled.div`
+    position: fixed;
+    top: 93%;
+    left: 50%;
+    transform: translate(-50%);
+    max-width: 480px;
+    height: 300px;
+    width: 100%;
+    border-radius: 20px;
+    background-color: #dadfe9;
+    transition: 0.2s all ease-in;
+    &:hover {
+        top: 85%;
+    }
+`;
+const DropArea = styled.div`
+    height: 100%;
+    width: 100%;
+    border-radius: 20px;
 `;
 const Form = styled.form`
     position: fixed;
-    top: 10px;
-    left: 10px;
-    width: 50px;
-    height: 50px;
+    z-index: 1;
+    top: 20px;
+    left: 20px;
     display: flex;
 `;
-
-const Input = styled.input``;
-const Button = styled.button``;
+const Input = styled.input`
+    font-size: 1.3em;
+    font-weight: 400;
+    font-family: inherit;
+    width: 200px;
+    height: 30px;
+    margin-right: 20px;
+`;
+const Button = styled.button`
+    width: 30px;
+    height: 30px;
+`;
 interface IForm {
     board: string;
 }
 function App() {
     const { register, handleSubmit, setValue } = useForm<IForm>();
-    const setBoards = useSetRecoilState(boardState);
+    const [boards, setBoards] = useRecoilState(boardState);
     const setContents = useSetRecoilState(contentState);
     const onDragEnd = ({
         destination,
@@ -38,7 +77,6 @@ function App() {
         draggableId,
         type,
     }: DropResult) => {
-        console.log(destination, source, draggableId);
         if (!destination) return;
         if (type === "CONTENTS") {
             if (destination.droppableId === source.droppableId) {
@@ -68,78 +106,73 @@ function App() {
             }
         }
         if (type === "BOARDS") {
-            if (destination.droppableId === source.droppableId) {
+            if (destination.droppableId === "boardDropId") {
                 setBoards((allBoards) => {
-                    const cpBoards = [...allBoards];
+                    const cpBoards = [...allBoards[source.droppableId]];
                     const cpBoard = { ...cpBoards[source.index] };
                     cpBoards.splice(source.index, 1);
                     cpBoards.splice(destination.index, 0, cpBoard);
-                    return [...cpBoards];
+                    return { ...allBoards, [source.droppableId]: cpBoards };
                 });
             }
+            if (destination.droppableId === "trashDropId") {
+                const cpBoards = [...boards[source.droppableId]];
+                cpBoards.splice(source.index, 1);
+                setBoards({ [source.droppableId]: cpBoards });
+                // setBoards((allBoards) => {
+                //     const cpBoards = [...allBoards[source.droppableId]];
+                //     cpBoards.splice(source.index, 1);
+                //     return { ...allBoards, [source.droppableId]: cpBoards };
+                // });
+                setContents((allContents) => {
+                    const cpContents = { ...allContents };
+                    delete cpContents[draggableId];
+                    return { ...cpContents };
+                });
+                console.log(boards, draggableId);
+            }
         }
-        // const toDo = boards[source.droppableId].find(
-        //     (toDo) => toDo.id === +draggableId
-        // );
-        // if (!destination || typeof toDo === "undefined") return;
-        // localStorage.setItem("boards", "{id: 1, text: hello}");
-        // JSON.parse(localStorage.getItem("boards") ?? "{}");
-        //     if (!destination) return;
-        //     if (destination.droppableId === source.droppableId) {
-        //         setBoards((allBoards) => {
-        //             const cloneBoard = [...allBoards[source.droppableId]];
-        //             const toDo = cloneBoard[source.index];
-        //             cloneBoard.splice(source.index, 1);
-        //             cloneBoard.splice(destination.index, 0, toDo);
-        //             return {
-        //                 ...allBoards,
-        //                 [source.droppableId]: cloneBoard,
-        //             };
-        //         });
-        //     }
-        //     if (destination.droppableId !== source.droppableId) {
-        //         setToDos((allBoards) => {
-        //             const cloneBoard = [...allBoards[source.droppableId]];
-        //             const targetBoard = [...allBoards[destination.droppableId]];
-        //             const toDo = cloneBoard[source.index];
-        //             cloneBoard.splice(source.index, 1);
-        //             targetBoard.splice(destination.index, 0, toDo);
-        //             return {
-        //                 ...allBoards,
-        //                 [destination.droppableId]: targetBoard,
-        //                 [source.droppableId]: cloneBoard,
-        //             };
-        //         });
-        //     }
     };
-    // const onDragStart = (
-    //     { source: { droppableId, index } }: DragStart,
-    //     provided: ResponderProvided
-    // ) => {
-    //     setBoards((allBoards) => {
-    //         const cloneBoard = [...allBoards[droppableId]];
-    //         const cloneToDo = { ...cloneBoard[index] };
-    //         cloneToDo.modify = false;
-    //         cloneBoard.splice(index, 1);
-    //         cloneBoard.splice(index, 0, cloneToDo);
-    //         return {
-    //             ...allBoards,
-    //             [droppableId]: cloneBoard,
-    //         };
-    //     });
-    // };
+    const onDragStart = (
+        { source }: DragStart,
+        provided: ResponderProvided
+    ) => {
+        setContents((allContents) => {
+            let newContetns = {};
+            const cpContents = { ...allContents };
+            const modContents = Object.keys(cpContents).map((key) =>
+                cpContents[key].map((content) => ({
+                    ...content,
+                    modify: false,
+                }))
+            );
+            Object.keys(cpContents).map(
+                (key, index) =>
+                    (newContetns = {
+                        ...newContetns,
+                        [key]: modContents[index],
+                    })
+            );
+            return { ...newContetns };
+        });
+    };
     const onValid = ({ board }: IForm) => {
         const date = Date.now();
         setBoards((allBoards) => {
-            const newBoard = {
-                id: date,
-                name: board,
-                text: board,
-                modify: false,
-                dropId: "boardDropId",
-                dragId: date + "",
+            const newBoard = [
+                ...allBoards["boardDropId"],
+                {
+                    id: date,
+                    name: board,
+                    text: board,
+                    modify: false,
+                    dragId: date + "",
+                },
+            ];
+            return {
+                ...allBoards,
+                boardDropId: newBoard,
             };
-            return [newBoard, ...allBoards];
         });
         setContents((allContents) => ({
             ...allContents,
@@ -154,8 +187,47 @@ function App() {
                 <Button>+</Button>
             </Form>
             <Wrapper>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <DropBoard />
+                <DragDropContext
+                    onDragEnd={onDragEnd}
+                    onDragStart={onDragStart}
+                >
+                    <DropBoard dropBoardId={"boardDropId"} />
+                    <BoardTrash>
+                        <Droppable
+                            droppableId="trashDropId"
+                            type="BOARDS"
+                            direction="vertical"
+                        >
+                            {(trashDrop) => (
+                                <DropArea
+                                    ref={trashDrop.innerRef}
+                                    {...trashDrop.droppableProps}
+                                >
+                                    {[0].map((faceDrag, index) => (
+                                        <Draggable
+                                            key={index}
+                                            draggableId={`fakeTrashDragId${index}`}
+                                            index={index}
+                                        >
+                                            {(trashDrag) => (
+                                                <BoardDragArea
+                                                    ref={trashDrag.innerRef}
+                                                    {...trashDrag.draggableProps}
+                                                    {...trashDrag.dragHandleProps}
+                                                    style={{
+                                                        transform:
+                                                            "translate(50%, 50%)",
+                                                    }}
+                                                ></BoardDragArea>
+                                            )}
+                                        </Draggable>
+                                    ))}
+
+                                    {trashDrop.placeholder}
+                                </DropArea>
+                            )}
+                        </Droppable>
+                    </BoardTrash>
                 </DragDropContext>
             </Wrapper>
         </>
