@@ -1,4 +1,3 @@
-import { MutableRefObject, RefObject } from "react";
 import { atom } from "recoil";
 
 export interface IDnD {

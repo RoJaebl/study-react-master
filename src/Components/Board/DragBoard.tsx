@@ -4,7 +4,7 @@ import { boardState, contentState } from "../../atoms";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquarePlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import DropContent from "../Content/DropContent";
-import { useRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import React from "react";
 
 export const DragArea = styled.div`
@@ -45,8 +45,8 @@ interface IDragBoardProps {
     index: number;
 }
 function DragBoard({ dropBoardId, dragBoardId, index }: IDragBoardProps) {
-    const [boards, setBoards] = useRecoilState(boardState);
-    const [contents, setContents] = useRecoilState(contentState);
+    const boards = useRecoilValue(boardState);
+    const setContents = useSetRecoilState(contentState);
     const createContent = () => {
         setContents((allContents) => {
             const cpContent = [...allContents[dragBoardId]];
