@@ -4,7 +4,10 @@ import styled from "styled-components";
 import { contentState } from "../../atoms";
 import DragContent from "./DragContent";
 
-const DropArea = styled.div`
+const DropArea = styled.div<{
+    isDraggingOver?: boolean;
+    draggingFromThisWith?: string;
+}>`
     display: flex;
     flex-direction: column;
     ::-webkit-scrollbar {
@@ -12,6 +15,13 @@ const DropArea = styled.div`
     }
     overflow: scroll;
     border-radius: 5px;
+    background-color: ${(props) =>
+        props.isDraggingOver
+            ? "#4f81bd"
+            : props.draggingFromThisWith
+            ? "pink"
+            : "inhert"};
+    transition: background-color 0.3s ease;
 `;
 interface IDropContentProps {
     dropContentId: string;
@@ -20,10 +30,12 @@ function DropContent({ dropContentId }: IDropContentProps) {
     const contents = useRecoilValue(contentState);
     return (
         <Droppable droppableId={dropContentId} type={"CONTENTS"}>
-            {(dropContent) => (
+            {(dropContent, snapshot) => (
                 <DropArea
                     ref={dropContent.innerRef}
                     {...dropContent.droppableProps}
+                    isDraggingOver={snapshot.isDraggingOver}
+                    draggingFromThisWith={snapshot.draggingFromThisWith!}
                 >
                     {contents[dropContentId].map((content, index) => (
                         <DragContent

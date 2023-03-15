@@ -5,16 +5,19 @@ import { Draggable } from "react-beautiful-dnd";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { contentState, IDnD } from "../../atoms";
+import "./styles.scss";
 
-const DragArea = styled.div`
+const DragArea = styled.div<{ isDragging?: boolean }>`
     display: grid;
-    grid-template-columns: 5fr 1fr 1fr;
+    grid-template-columns: 4fr 1fr 1fr;
     justify-items: start;
-    align-items: stretch;
+    align-items: center;
     border-radius: 5px;
     margin-bottom: 5px;
     padding: 10px 10px;
+    height: 50px;
     background-color: ${(props) => props.theme.cardColor};
+    box-shadow: ${(props) => (props.isDragging ? "1px 2px 3px black" : "none")};
 `;
 const Text = styled.span`
     display: flex;
@@ -112,6 +115,7 @@ function DragContent({
                     ref={dragContent.innerRef}
                     {...dragContent.draggableProps}
                     {...dragContent.dragHandleProps}
+                    isDragging={snapshot.isDragging}
                 >
                     <form
                         onSubmit={onSubmit}
@@ -144,8 +148,16 @@ function DragContent({
                     >
                         {contents[index].text}
                     </Text>
-                    <FontAwesomeIcon onClick={onModify} icon={faPen} />
-                    <FontAwesomeIcon onClick={onTrash} icon={faTrash} />
+                    <FontAwesomeIcon
+                        className="icon"
+                        onClick={onModify}
+                        icon={faPen}
+                    />
+                    <FontAwesomeIcon
+                        className="icon"
+                        onClick={onTrash}
+                        icon={faTrash}
+                    />
                 </DragArea>
             )}
         </Draggable>
