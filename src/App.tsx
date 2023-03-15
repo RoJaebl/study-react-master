@@ -1,18 +1,19 @@
 import { motion } from "framer-motion";
+import styled from "styled-components";
 import "./styles.scss";
 
+const Box = styled.div`
+    width: 150px;
+    height: 150px;
+    background: white;
+    border-radius: 30px;
+`;
 function App() {
     return (
-        <motion.div
-            className="container"
-            initial={{ scale: 0 }}
-            animate={{ rotate: 180, scale: 1 }}
-            transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-            }}
-        />
+        <>
+            <Box></Box>
+            <motion.div className="container" />
+        </>
     );
 }
 

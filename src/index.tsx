@@ -41,16 +41,16 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(180deg, #f08, #d0e);
-  line-height: 1;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #f08, #d0e);
+	line-height: 1;
 }
 ol, ul {
 	list-style: none;
