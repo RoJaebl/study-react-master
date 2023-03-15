@@ -4,6 +4,7 @@ import { RecoilRoot } from "recoil";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import App from "./App";
 import { darkTheme } from "./theme";
+import { HelmetProvider } from "react-helmet-async";
 
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl as Element);
@@ -76,7 +77,9 @@ root.render(
     <ThemeProvider theme={darkTheme}>
         <GlobalStyle />
         <RecoilRoot>
-            <App />
+            <HelmetProvider>
+                <App />
+            </HelmetProvider>
         </RecoilRoot>
     </ThemeProvider>
 );

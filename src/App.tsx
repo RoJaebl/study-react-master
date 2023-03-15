@@ -1,18 +1,11 @@
-import {
-    DragDropContext,
-    Draggable,
-    DragStart,
-    Droppable,
-    DropResult,
-    ResponderProvided,
-} from "react-beautiful-dnd";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { useForm } from "react-hook-form";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { boardState, contentState } from "./atoms";
 import DropBoard from "./Components/Board/DropBoard";
-import { DragArea as BoardDragArea } from "./Components/Board/DragBoard";
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 
 const Wrapper = styled.div`
     display: flex;
@@ -30,9 +23,9 @@ const BoardTrash = styled.div`
     top: 93%;
     left: 50%;
     transform: translate(-50%);
-    max-width: 480px;
-    height: 300px;
-    width: 100%;
+    max-width: 300px;
+    width: 270px;
+    height: 400px;
     border-radius: 20px;
     background-color: #dadfe9;
     transition: 0.2s all ease-in;
@@ -72,7 +65,7 @@ function App() {
     const [boards, setBoards] = useRecoilState(boardState);
     const setContents = useSetRecoilState(contentState);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const onDragEnd = async ({
+    const onDragEnd = ({
         destination,
         source,
         draggableId,
@@ -96,20 +89,33 @@ function App() {
             destination.droppableId !== source.droppableId &&
             type === "CONTENTS"
         ) {
-            setContents((allContents) => {
-                const cpContents = [...allContents[source.droppableId]];
-                const distContents = [...allContents[destination.droppableId]];
-                const cpContent = { ...cpContents[source.index] };
-                cpContents.splice(source.index, 1);
-                distContents.splice(destination.index, 0, cpContent);
-                return {
-                    ...allContents,
-                    [source.droppableId]: cpContents,
-                    [destination.droppableId]: distContents,
-                };
-            });
+            if (destination.droppableId === "contentTrashDropId") {
+                setContents((allContents) => {
+                    const cpContents = [...allContents[source.droppableId]];
+                    cpContents.splice(source.index, 1);
+                    return { ...allContents, [source.droppableId]: cpContents };
+                });
+            } else {
+                setContents((allContents) => {
+                    const cpContents = [...allContents[source.droppableId]];
+                    const distContents = [
+                        ...allContents[destination.droppableId],
+                    ];
+                    const cpContent = { ...cpContents[source.index] };
+                    cpContents.splice(source.index, 1);
+                    distContents.splice(destination.index, 0, cpContent);
+                    return {
+                        ...allContents,
+                        [source.droppableId]: cpContents,
+                        [destination.droppableId]: distContents,
+                    };
+                });
+            }
         }
-        if (destination.droppableId === "boardDropId" && type === "BOARDS") {
+        if (
+            destination.droppableId === source.droppableId &&
+            type === "BOARDS"
+        ) {
             setBoards((allBoards) => {
                 const cpBoards = [...allBoards[source.droppableId]];
                 const cpBoard = { ...cpBoards[source.index] };
@@ -118,10 +124,15 @@ function App() {
                 return { ...allBoards, [source.droppableId]: cpBoards };
             });
         }
-        if (destination.droppableId === "trashDropId" && type === "BOARDS") {
-            const cpBoards = [...boards[source.droppableId]];
-            cpBoards.splice(source.index, 1);
-            setBoards({ [source.droppableId]: cpBoards });
+        if (
+            destination.droppableId !== source.droppableId &&
+            type === "BOARDS"
+        ) {
+            setBoards((allBoards) => {
+                const cpBoards = [...allBoards[source.droppableId]];
+                cpBoards.splice(source.index, 1);
+                return { [source.droppableId]: cpBoards };
+            });
             setContents((allContents) => {
                 const cpContents = { ...allContents };
                 delete cpContents[draggableId];
@@ -130,28 +141,35 @@ function App() {
         }
         setTimeout(() => setIsLoading(false), 600);
     };
-    const onDragStart = (
-        { source }: DragStart,
-        provided: ResponderProvided
-    ) => {
+    const onDragStart = () => {
         // all content focus out
         setContents((allContents) => {
-            let newContetns = {};
-            const cpContents = { ...allContents };
-            const modContents = Object.keys(cpContents).map((key) =>
-                cpContents[key].map((content) => ({
+            let newContents = {};
+            const allModContents = Object.keys(allContents).map((key) => {
+                const cpContents = [...allContents[key]];
+                const modContents = cpContents.map((content) => ({
                     ...content,
                     modify: false,
-                }))
-            );
-            Object.keys(cpContents).map(
+                }));
+                return modContents;
+            });
+            Object.keys(allContents).map(
                 (key, index) =>
-                    (newContetns = {
-                        ...newContetns,
-                        [key]: modContents[index],
+                    (newContents = {
+                        ...newContents,
+                        [key]: allModContents[index],
                     })
             );
-            return { ...newContetns };
+            return { ...newContents };
+        });
+        // all board focus out
+        setBoards((allBoards) => {
+            const cpBoards = [...allBoards["boardDropId"]];
+            const modBoards = cpBoards.map((board) => ({
+                ...board,
+                modify: false,
+            }));
+            return { ...allBoards, ["boardDropId"]: modBoards };
         });
     };
     const onValid = ({ board }: IForm) => {
@@ -180,6 +198,9 @@ function App() {
     };
     return (
         <>
+            <Helmet>
+                <title>simple trello</title>
+            </Helmet>
             <Form onSubmit={handleSubmit(onValid)}>
                 <Input {...register("board")} type="text" />
                 <Button>+</Button>
@@ -191,33 +212,25 @@ function App() {
                 >
                     <DropBoard dropBoardId={"boardDropId"} />
                     <BoardTrash>
+                        <Droppable droppableId="boardTrashDropId" type="BOARDS">
+                            {(trashDrop) => (
+                                <DropArea
+                                    ref={trashDrop.innerRef}
+                                    {...trashDrop.droppableProps}
+                                ></DropArea>
+                            )}
+                        </Droppable>
+                    </BoardTrash>
+                    <BoardTrash>
                         <Droppable
-                            droppableId="trashDropId"
-                            type="BOARDS"
-                            direction="vertical"
+                            droppableId="contentTrashDropId"
+                            type="CONTENTS"
                         >
                             {(trashDrop) => (
                                 <DropArea
                                     ref={trashDrop.innerRef}
                                     {...trashDrop.droppableProps}
                                 >
-                                    <Draggable
-                                        key={0}
-                                        draggableId={`fakeTrashDragId0`}
-                                        index={0}
-                                    >
-                                        {(trashDrag) => (
-                                            <BoardDragArea
-                                                ref={trashDrag.innerRef}
-                                                {...trashDrag.draggableProps}
-                                                {...trashDrag.dragHandleProps}
-                                                style={{
-                                                    transform:
-                                                        "translate(50%, 50%)",
-                                                }}
-                                            ></BoardDragArea>
-                                        )}
-                                    </Draggable>
                                     {trashDrop.placeholder}
                                 </DropArea>
                             )}
