@@ -7,14 +7,19 @@ const Box = styled(motion.div)`
     background: white;
     border-radius: 15px;
 `;
+
+const myVars = {
+    start: { scale: 0 },
+    end: {
+        scale: 1,
+        rotateZ: 360,
+        borderRadius: 75,
+        transition: { type: "spring", duration: 0.5, delay: 0.5, mass: 1 },
+    },
+};
+
 function App() {
-    return (
-        <Box
-            initial={{ scale: 0 }}
-            transition={{ type: "spring", duration: 0.5, delay: 0.5, mass: 1 }}
-            animate={{ scale: 1, rotateZ: 360, borderRadius: 75 }}
-        />
-    );
+    return <Box variants={myVars} initial="start" animate="end" />;
 }
 
 export default App;
