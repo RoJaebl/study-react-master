@@ -1,5 +1,5 @@
-import { motion, Variants } from "framer-motion";
-import { useRef } from "react";
+import { motion, Variants, useMotionValue, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 const Box = styled(motion.div)`
@@ -30,18 +30,12 @@ const boxVariants: Variants = {
 };
 
 function App() {
-    const biggerBoxRef = useRef<HTMLDivElement>(null);
+    const x = useMotionValue(0);
+    const scale = useTransform(x, [-750, 0, 750], [2, 1, 0.1]);
+    useEffect(() => scale.onChange(() => console.log(scale.get())), []);
     return (
-        <BiggerBox ref={biggerBoxRef}>
-            <Box
-                drag
-                dragSnapToOrigin
-                dragElastic={0.05}
-                dragConstraints={biggerBoxRef}
-                variants={boxVariants}
-                whileHover="hover"
-                whileTap="down"
-            />
+        <BiggerBox>
+            <Box style={{ x, scale }} drag="x" dragSnapToOrigin />
         </BiggerBox>
     );
 }
