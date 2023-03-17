@@ -1,7 +1,21 @@
-import { motion, Variants, useMotionValue, useTransform } from "framer-motion";
+import {
+    motion,
+    Variants,
+    useMotionValue,
+    useTransform,
+    useScroll,
+} from "framer-motion";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
+const Wrapper = styled(motion.div)`
+    width: 100vw;
+    height: 200vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 const Box = styled(motion.div)`
     width: 100px;
     height: 100px;
@@ -31,12 +45,24 @@ const boxVariants: Variants = {
 
 function App() {
     const x = useMotionValue(0);
-    const scale = useTransform(x, [-750, 0, 750], [2, 1, 0.1]);
-    useEffect(() => scale.onChange(() => console.log(scale.get())), []);
+    const rotateZ = useTransform(x, [-750, 750], [-360, 360]);
+    const gradient = useTransform(
+        x,
+        [-750, 0, 750],
+        [
+            "linear-gradient(135deg, #0ab1d0, #0053ee)",
+            "linear-gradient(135deg, rgb(238, 0, 153), rgb(221, 0, 238))",
+            "linear-gradient(135deg, rgb(0, 238, 155), rgb(238, 178, 0))",
+        ]
+    );
+    const { scrollYProgress } = useScroll();
+    const scale = useTransform(scrollYProgress, [0, 1], [1, 5]);
     return (
-        <BiggerBox>
-            <Box style={{ x, scale }} drag="x" dragSnapToOrigin />
-        </BiggerBox>
+        <Wrapper style={{ background: gradient }}>
+            <BiggerBox>
+                <Box style={{ x, rotateZ, scale }} drag="x" dragSnapToOrigin />
+            </BiggerBox>
+        </Wrapper>
     );
 }
 
