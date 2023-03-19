@@ -63,8 +63,6 @@ table {
 }
 body{
 font-family: '메이플스토리', 'Source Sans Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-background-color: ${(props) => props.theme.bgColor};
-color: ${(props) => props.theme.textColor};
 }
 a{
     text-decoration: none;
