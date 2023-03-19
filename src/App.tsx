@@ -15,7 +15,7 @@ const Box = styled(motion.div)`
     height: 200px;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 40px;
-    box-shadow: 0 2px 3px rgba("0, 0, 0, 0."), 0 10px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 const Grid = styled.div`
     display: grid;
@@ -34,29 +34,31 @@ const Overlay = styled(motion.div)`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
 `;
 function App() {
-    const [clicked, setClicked] = useState(false);
-    const toggleClicked = () => setClicked((prev) => !prev);
+    const [id, setId] = useState<null | string>(null);
     return (
-        <Wrapper onClick={toggleClicked}>
+        <Wrapper>
             <Grid>
-                <Box layoutId="hello" />
-                <Box />
-                <Box />
-                <Box />
+                {[1, 2, 3, 4].map((n) => (
+                    <Box
+                        onClick={() => setId(n + "")}
+                        key={n}
+                        layoutId={n + ""}
+                    ></Box>
+                ))}
             </Grid>
             <AnimatePresence>
-                {clicked ? (
+                {id ? (
                     <Overlay
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        onClick={() => setId(null)}
+                        initial={{ backgroundColor: "rgba(0,0,0,0)" }}
+                        animate={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                        exit={{ backgroundColor: "rgba(0,0,0,0)" }}
                     >
                         <Box
-                            layoutId="hello"
-                            style={{ width: "400px", height: "200px" }}
+                            layoutId={id + ""}
+                            style={{ width: 400, height: 200 }}
                         />
                     </Overlay>
                 ) : null}
