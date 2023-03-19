@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
-import App from "./App";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { darkTheme } from "./theme";
+import { RouterProvider } from "react-router";
+import router from "./Routes/router";
+import { HelmetProvider } from "react-helmet-async";
 
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl as Element);
@@ -75,7 +77,9 @@ root.render(
         <RecoilRoot>
             <ThemeProvider theme={darkTheme}>
                 <GlobalStyle />
-                <App />
+                <HelmetProvider>
+                    <RouterProvider router={router}></RouterProvider>
+                </HelmetProvider>
             </ThemeProvider>
         </RecoilRoot>
     </React.StrictMode>
