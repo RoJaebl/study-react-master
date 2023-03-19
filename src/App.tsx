@@ -27,26 +27,43 @@ const Box = styled(motion.div)`
 `;
 
 const boxVariants: Variants = {
-    initial: { opacity: 0, scale: 0, x: 500 },
+    initial: (isBack: boolean) => ({
+        opacity: 0,
+        scale: 0,
+        x: isBack ? -500 : 500,
+    }),
     animate: { opacity: 1, scale: 1, x: 0, transition: { duration: 1 } },
-    exit: { opacity: 0, scale: 0, x: -500, transition: { duration: 1 } },
+    exit: (isBack: boolean) => ({
+        opacity: 0,
+        scale: 0,
+        x: isBack ? 500 : -500,
+        transition: { duration: 1 },
+    }),
 };
 function App() {
     const [visible, setVisible] = useState(1);
-    const onNext = () => setVisible((prev) => (prev === 10 ? 10 : prev + 1));
-    const onPrev = () => setVisible((prev) => (prev === 1 ? 1 : prev - 1));
+    const [isBack, setIsBack] = useState(false);
+    const onNext = () => {
+        setVisible((prev) => (prev === 10 ? 10 : prev + 1));
+        setIsBack(false);
+    };
+    const onPrev = () => {
+        setVisible((prev) => (prev === 1 ? 1 : prev - 1));
+        setIsBack(true);
+    };
     return (
         <Wrapper>
             <button onClick={onNext}>next</button>
             <button onClick={onPrev}>prev</button>
-            <AnimatePresence>
-                {[1, 2, 3, 4, 5, 6, 7, 9, 10].map((slid) =>
-                    slid === visible ? (
-                        <Box key={slid} variants={boxVariants} {...boxVariants}>
-                            {slid}
-                        </Box>
-                    ) : null
-                )}
+            <AnimatePresence custom={isBack}>
+                <Box
+                    custom={isBack}
+                    key={visible}
+                    variants={boxVariants}
+                    {...boxVariants}
+                >
+                    {visible}
+                </Box>
             </AnimatePresence>
         </Wrapper>
     );
