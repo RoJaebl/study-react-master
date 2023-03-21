@@ -6,6 +6,7 @@ import { darkTheme } from "./theme";
 import { RouterProvider } from "react-router";
 import router from "./Routes/router";
 import { HelmetProvider } from "react-helmet-async";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl as Element);
@@ -65,6 +66,10 @@ table {
 }
 body{
 font-family: '메이플스토리', 'Source Sans Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+color:${(props) => props.theme.white.darker};
+font-weight: 300;
+line-height: 1.2;
+background-color: black;
 }
 a{
     text-decoration: none;
@@ -72,15 +77,18 @@ a{
 }
 `;
 
+const client = new QueryClient();
 root.render(
     <React.StrictMode>
-        <RecoilRoot>
-            <ThemeProvider theme={darkTheme}>
-                <GlobalStyle />
-                <HelmetProvider>
-                    <RouterProvider router={router}></RouterProvider>
-                </HelmetProvider>
-            </ThemeProvider>
-        </RecoilRoot>
+        <QueryClientProvider client={client}>
+            <RecoilRoot>
+                <ThemeProvider theme={darkTheme}>
+                    <GlobalStyle />
+                    <HelmetProvider>
+                        <RouterProvider router={router}></RouterProvider>
+                    </HelmetProvider>
+                </ThemeProvider>
+            </RecoilRoot>
+        </QueryClientProvider>
     </React.StrictMode>
 );
